@@ -73,12 +73,7 @@ export class EntityResolver {
     const url = `${mbBase}/url?resource=${encodeURIComponent(platformUrl)}&inc=artist-rels&fmt=json`;
 
     try {
-      const res = await this.fetchFn(url, {
-        headers: {
-          'User-Agent': 'SimilarArtistsGraph/0.1.0 (https://github.com/similar-artists-graph)',
-          'Accept': 'application/json',
-        },
-      });
+      const res = await this.mbProvider.queuedFetch(url);
 
       if (!res.ok) return null;
 

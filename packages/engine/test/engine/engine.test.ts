@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createEngine } from '../../src/engine/Engine.js';
+import { RequestQueue } from '../../src/queue/RequestQueue.js';
 import {
   MOCK_MB_SEARCH_RESPONSE,
   MOCK_MB_ARTIST_URL_RELS_RESPONSE,
@@ -9,6 +10,17 @@ import {
   MOCK_DEEZER_RELATED_RESPONSE,
 } from '../fixtures/mock-fetch.js';
 import type { MockResponse } from '../fixtures/mock-fetch.js';
+
+// Fast MB queue for tests — avoids 1 req/s throttle delays
+function makeFastMbQueue() {
+  return new RequestQueue({
+    providerId: 'musicbrainz',
+    requestsPerSecond: 1000,
+    maxRetries: 3,
+    maxDelayMs: 0,
+    circuitBreakerThreshold: 10,
+  });
+}
 
 // Routed mock fetch: maps URL patterns to mock responses
 function createRoutedMockFetch(routes: Array<{ pattern: string | RegExp; response: MockResponse }>): typeof fetch {
@@ -88,6 +100,7 @@ describe('Engine', () => {
     const engine = createEngine({
       providers: { lastfm: { apiKey: 'test-api-key' } },
       fetchFn: mockFetch,
+      mbQueue: makeFastMbQueue(),
     });
 
     const result = await engine.explore('Radiohead');
@@ -104,6 +117,7 @@ describe('Engine', () => {
     const engine = createEngine({
       providers: { lastfm: { apiKey: 'test-api-key' } },
       fetchFn: mockFetch,
+      mbQueue: makeFastMbQueue(),
     });
 
     const result = await engine.explore('Radiohead');
@@ -125,6 +139,7 @@ describe('Engine', () => {
     const engine = createEngine({
       providers: { lastfm: { apiKey: 'test-api-key' } },
       fetchFn: mockFetch,
+      mbQueue: makeFastMbQueue(),
     });
 
     const exploreResult = await engine.explore('Radiohead');
@@ -211,6 +226,7 @@ describe('Engine', () => {
       maxNodes: 5,
       providers: { lastfm: { apiKey: 'test-api-key' } },
       fetchFn: mockFetch,
+      mbQueue: makeFastMbQueue(),
     });
 
     const result = await engine.explore('Radiohead');
@@ -228,6 +244,7 @@ describe('Engine', () => {
     const engine = createEngine({
       providers: { lastfm: { apiKey: 'test-api-key' } },
       fetchFn: mockFetch,
+      mbQueue: makeFastMbQueue(),
     });
 
     await engine.explore('Radiohead');
@@ -283,6 +300,7 @@ describe('Engine', () => {
     const engine = createEngine({
       providers: { lastfm: { apiKey: 'test-api-key' } },
       fetchFn: mockFetch,
+      mbQueue: makeFastMbQueue(),
     });
 
     const result = await engine.explore('Radiohead');
@@ -318,6 +336,7 @@ describe('Engine', () => {
 
     const engine = createEngine({
       fetchFn: mockFetch,
+      mbQueue: makeFastMbQueue(),
     });
 
     const result = await engine.explore('xyznonexistent');

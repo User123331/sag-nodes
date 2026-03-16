@@ -51,6 +51,46 @@ export class MusicBrainzProvider implements ProviderAdapter {
     this.fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
   }
 
+  /**
+   * Execute a fetch request through this provider's rate-limit queue.
+   * Uses the same User-Agent and Accept headers as all other MB requests.
+   * Throws on non-ok (503, 429, other) so the queue's retry/circuit-breaker
+   * logic handles rate-limit responses consistently.
+   */
+  async queuedFetch(url: string): Promise<Response> {
+    const result = await this.queue.execute(async () => {
+      const res = await this.fetchFn(url, {
+        headers: { 'User-Agent': this.userAgent, 'Accept': 'application/json' },
+      });
+
+      if (res.status === 404) {
+        throw { kind: 'NotFoundError', provider: 'musicbrainz', query: url } satisfies ProviderError;
+      }
+      if (res.status === 429 || res.status === 503) {
+        const retryAfter = res.headers.get('Retry-After');
+        const rateLimitError: ProviderError = retryAfter
+          ? { kind: 'RateLimitError', provider: 'musicbrainz', retryAfterMs: parseInt(retryAfter, 10) * 1000 }
+          : { kind: 'RateLimitError', provider: 'musicbrainz' };
+        throw rateLimitError;
+      }
+      if (!res.ok) {
+        const networkError: ProviderError = {
+          kind: 'NetworkError',
+          provider: 'musicbrainz',
+          message: `HTTP ${res.status}: ${res.statusText}`,
+        };
+        throw networkError;
+      }
+
+      return res;
+    });
+
+    if (!result.ok) {
+      throw result.error;
+    }
+    return result.value;
+  }
+
   async searchArtist(query: string): Promise<Result<ArtistSummary[], ProviderError>> {
     const cacheKey = `musicbrainz:searchArtist:${JSON.stringify(query)}`;
     const cached = this.cache.get(cacheKey);

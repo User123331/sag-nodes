@@ -2,6 +2,7 @@ import type { Result } from '../types/result.js';
 import type { ProviderError } from '../types/errors.js';
 import type { ArtistGraphData } from '../graph/types.js';
 import type { CacheStore } from '../cache/CacheStore.js';
+import type { RequestQueue } from '../queue/RequestQueue.js';
 
 export interface ProviderCredentials {
   readonly lastfm?: { readonly apiKey: string };
@@ -16,6 +17,7 @@ export interface EngineConfig {
   readonly cache?: CacheStore;
   readonly fetchFn?: typeof fetch;
   readonly deezerBaseUrl?: string;   // override for browser proxy (e.g. '/deezer-proxy')
+  readonly mbQueue?: RequestQueue;   // override MusicBrainz queue (e.g. for tests)
 }
 
 export interface ExploreResult extends ArtistGraphData {

@@ -29,7 +29,11 @@ export class EngineImpl implements EngineInterface {
     const cache = config.cache ?? new LruCache(1000);
     const fetchFn = config.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
 
-    const mbProvider = new MusicBrainzProvider({ cache, fetchFn });
+    const mbProvider = new MusicBrainzProvider({
+      cache,
+      fetchFn,
+      ...(config.mbQueue !== undefined ? { queue: config.mbQueue } : {}),
+    });
     this.resolver = new EntityResolver({ mbProvider, cache, fetchFn });
     this.graphBuilder = new GraphBuilder({
       ...(config.maxNodes !== undefined ? { maxNodes: config.maxNodes } : {}),

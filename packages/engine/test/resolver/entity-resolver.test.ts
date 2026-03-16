@@ -240,4 +240,59 @@ describe('EntityResolver', () => {
       expect((mockFetch as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
     });
   });
+
+  describe('resolveUrlToMbid — queue routing (gap-closure 03-04)', () => {
+    it('routes URL lookups through the mbProvider queue (queue.execute is called)', async () => {
+      const mockFetch = createMockFetch([
+        { status: 200, body: MOCK_MB_URL_LOOKUP_RESPONSE },
+      ]);
+      // Create an mbProvider with a spy on queuedFetch
+      const mbProvider = makeMbProvider(mockFetch);
+      const queuedFetchSpy = vi.spyOn(mbProvider, 'queuedFetch');
+
+      const resolver = new EntityResolver({ mbProvider, cache });
+
+      const mbid = await resolver.resolveUrlToMbid(
+        'https://open.spotify.com/artist/4Z8W4fKeB5YxbusRsdQVPb',
+      );
+
+      expect(mbid).toBe('a74b1b7f-71a5-4011-9441-d0b5e4122711');
+      // queuedFetch must have been called — confirms routing goes through the queue
+      expect(queuedFetchSpy).toHaveBeenCalledOnce();
+    });
+
+    it('returns null on 503 from the queued fetch — does not throw', async () => {
+      const mockFetch = createMockFetch([
+        { status: 503, statusText: 'Service Unavailable' },
+      ]);
+      const mbProvider = makeMbProvider(mockFetch);
+
+      const resolver = new EntityResolver({ mbProvider, cache });
+
+      // Should return null, not throw
+      const result = await resolver.resolveUrlToMbid(
+        'https://open.spotify.com/artist/some-id',
+      );
+      expect(result).toBeNull();
+    });
+
+    it('caches successful result and returns MBID string on second call', async () => {
+      const mockFetch = createMockFetch([
+        { status: 200, body: MOCK_MB_URL_LOOKUP_RESPONSE },
+      ]);
+      const mbProvider = makeMbProvider(mockFetch);
+      const queuedFetchSpy = vi.spyOn(mbProvider, 'queuedFetch');
+
+      const resolver = new EntityResolver({ mbProvider, cache });
+
+      const url = 'https://open.spotify.com/artist/4Z8W4fKeB5YxbusRsdQVPb';
+      const first = await resolver.resolveUrlToMbid(url);
+      const second = await resolver.resolveUrlToMbid(url);
+
+      expect(first).toBe('a74b1b7f-71a5-4011-9441-d0b5e4122711');
+      expect(second).toBe('a74b1b7f-71a5-4011-9441-d0b5e4122711');
+      // queuedFetch only called once — cache handles second request
+      expect(queuedFetchSpy).toHaveBeenCalledOnce();
+    });
+  });
 });
