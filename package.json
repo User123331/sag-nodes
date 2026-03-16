@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test -- --run",
+    "dev": "pnpm --filter @similar-artists-graph/viewer dev",
+    "typecheck": "pnpm -r exec tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
