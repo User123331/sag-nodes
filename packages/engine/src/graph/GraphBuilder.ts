@@ -114,4 +114,13 @@ export class GraphBuilder {
   hasNode(mbid: string): boolean {
     return this.artistGraph.hasNode(mbid);
   }
+
+  /**
+   * Reset the graph to empty state, ready for a new exploration.
+   */
+  reset(): void {
+    this.artistGraph.graph.clear();
+    this.artistGraph.seedMbid = '';
+    this.artistGraph.truncated = false;
+  }
 }

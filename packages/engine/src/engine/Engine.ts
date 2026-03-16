@@ -143,6 +143,7 @@ export class EngineImpl implements EngineInterface {
 
     // Use the top candidate (highest score)
     const seed = candidates[0]!;
+    this.graphBuilder.reset();
     this.graphBuilder.setSeed(seed.mbid, seed.name, seed.disambiguation);
 
     // Step 2: Fan out to all providers in parallel
