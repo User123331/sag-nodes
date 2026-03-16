@@ -61,11 +61,12 @@ Plans:
   3. Clicking a node opens a slide-in detail panel showing the artist's name, image, genres, cross-platform listener/fan counts, external links (Spotify, Last.fm, Deezer, etc.), similarity score to seed, and list of connected artists
   4. The graph renders at 200+ nodes without noticeable lag, with zoom, pan, and drag interactions all responsive on a standard laptop
   5. Nodes are sized by popularity and colored by genre cluster, edges vary in thickness/opacity by similarity strength, and the overall UI is dark-first with minimal chrome
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Graph rendering, search UI, and Zustand store wired to engine events
-- [ ] 03-02: Detail panel, node/edge styling, expansion animation, and UI polish
+- [ ] 03-01-PLAN.md — Dependencies, types, Zustand store, utilities, dark theme CSS, and test infrastructure
+- [ ] 03-02-PLAN.md — SearchBar with autocomplete and GraphCanvas with force-directed rendering
+- [ ] 03-03-PLAN.md — DetailPanel, App wiring, expansion coordination, and visual verification
 
 ### Phase 4: Controls, Export, and Polish
 **Goal**: Users have full control over the graph exploration experience with provider toggles, depth/limit controls, data export, shareable URLs, keyboard navigation, and the viewer is packaged for Next.js consumption
@@ -92,5 +93,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Engine Foundation | 2/2 | Complete   | 2026-03-16 |
 | 2. Multi-Provider Data Pipeline | 2/2 | Complete   | 2026-03-16 |
-| 3. Interactive Viewer | 0/2 | Not started | - |
+| 3. Interactive Viewer | 0/3 | Not started | - |
 | 4. Controls, Export, and Polish | 0/2 | Not started | - |
