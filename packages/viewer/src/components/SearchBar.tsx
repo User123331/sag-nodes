@@ -98,13 +98,19 @@ export function SearchBar() {
     }
   }, [engine, setSelectedArtist, setIsExploring, setGraph]);
 
-  const handleClear = useCallback(() => {
+  const handleReset = useCallback(() => {
     clearSearch();
     clearGraph();
     selectNode(null);
     setIsOpen(false);
     setHighlightedIndex(-1);
   }, [clearSearch, clearGraph, selectNode]);
+
+  const handleClear = useCallback(() => {
+    clearSearch();
+    setIsOpen(false);
+    setHighlightedIndex(-1);
+  }, [clearSearch]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!isOpen) return;
@@ -160,7 +166,7 @@ export function SearchBar() {
           aria-autocomplete="list"
           aria-expanded={showDropdown}
         />
-        {selectedArtist !== null && (
+        {hasGraph && (
           <button
             className="search-clear"
             type="button"
@@ -171,6 +177,17 @@ export function SearchBar() {
           </button>
         )}
       </div>
+
+      {hasGraph && (
+        <button
+          className="search-reset"
+          type="button"
+          onClick={handleReset}
+          aria-label="Reset graph"
+        >
+          Reset
+        </button>
+      )}
 
       {showDropdown && (
         <div className="search-dropdown" role="listbox">

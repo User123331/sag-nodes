@@ -69,6 +69,25 @@
   color: var(--color-text-primary);
 }
 
+/* Reset button */
+.search-reset {
+  display: block;
+  margin: 4px auto 0;
+  padding: 2px 10px;
+  font-size: 11px;
+  background: transparent;
+  color: var(--color-text-secondary, #666);
+  border: 1px solid var(--color-border, #333);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.search-reset:hover {
+  color: var(--color-text-primary, #fff);
+  border-color: var(--color-text-secondary, #666);
+}
+
 /* Autocomplete dropdown */
 .search-dropdown {
   position: absolute;
