@@ -8,7 +8,7 @@ import { RequestQueue } from '../../queue/RequestQueue.js';
 import { LruCache } from '../../cache/LruCache.js';
 import type { DeezerRelatedResponse, DeezerSearchResponse } from './types.js';
 
-const DEEZER_BASE = 'https://api.deezer.com';
+const DEEZER_BASE_DEFAULT = 'https://api.deezer.com';
 const DEFAULT_TTL_MS = 5 * 60 * 1000;
 const FIXED_SCORE = 0.5;
 
@@ -17,12 +17,13 @@ export interface DeezerProviderOptions {
   readonly ttlMs?: number;
   readonly fetchFn?: typeof fetch;
   readonly queue?: RequestQueue;
+  readonly baseUrl?: string;
 }
 
 export class DeezerProvider implements ProviderAdapter {
   readonly config: ProviderConfig = {
     id: 'deezer',
-    baseUrl: DEEZER_BASE,
+    baseUrl: DEEZER_BASE_DEFAULT,
     rateLimit: { requestsPerSecond: 5 },
     requiresAuth: false,
     capabilities: {
@@ -36,12 +37,14 @@ export class DeezerProvider implements ProviderAdapter {
   private readonly cache: CacheStore;
   private readonly ttlMs: number;
   private readonly fetchFn: typeof fetch;
+  private readonly baseUrl: string;
 
   constructor(options: DeezerProviderOptions = {}) {
     this.queue = options.queue ?? new RequestQueue({ providerId: 'deezer', requestsPerSecond: 5 });
     this.cache = options.cache ?? new LruCache(500);
     this.ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
-    this.fetchFn = options.fetchFn ?? fetch;
+    this.fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
+    this.baseUrl = options.baseUrl ?? DEEZER_BASE_DEFAULT;
   }
 
   /**
@@ -56,7 +59,7 @@ export class DeezerProvider implements ProviderAdapter {
       return ok(JSON.parse(cached) as SimilarArtist[]);
     }
 
-    const url = `${DEEZER_BASE}/artist/${encodeURIComponent(deezerId)}/related`;
+    const url = `${this.baseUrl}/artist/${encodeURIComponent(deezerId)}/related`;
 
     const result = await this.queue.execute(async () => {
       const res = await this.fetchFn(url, {
@@ -100,7 +103,7 @@ export class DeezerProvider implements ProviderAdapter {
       return ok(JSON.parse(cached) as Array<{ id: number; name: string; nb_fan?: number }>);
     }
 
-    const url = `${DEEZER_BASE}/search/artist?q=${encodeURIComponent(name)}&limit=3`;
+    const url = `${this.baseUrl}/search/artist?q=${encodeURIComponent(name)}&limit=3`;
 
     const result = await this.queue.execute(async () => {
       const res = await this.fetchFn(url, {

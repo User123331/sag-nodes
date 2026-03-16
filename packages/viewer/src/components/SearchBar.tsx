@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
-import { MusicBrainzProvider } from '@similar-artists-graph/engine';
+import { MusicBrainzProvider, RequestQueue } from '@similar-artists-graph/engine';
 import type { ArtistSummary } from '@similar-artists-graph/engine';
 import { useGraphStore } from '../store/index.js';
 import { useDebounce } from '../hooks/useDebounce.js';
@@ -9,7 +9,10 @@ import './SearchBar.css';
 export function SearchBar() {
   const mbProviderRef = useRef<MusicBrainzProvider | null>(null);
   if (mbProviderRef.current === null) {
-    mbProviderRef.current = new MusicBrainzProvider({ fetchFn: fetch });
+    mbProviderRef.current = new MusicBrainzProvider({
+      fetchFn: (...args: Parameters<typeof fetch>) => fetch(...args),
+      queue: new RequestQueue({ providerId: 'musicbrainz', requestsPerSecond: 5 }),
+    });
   }
 
   const query = useGraphStore(s => s.query);
@@ -45,6 +48,7 @@ export function SearchBar() {
     const result = await mbProvider.searchArtist(value);
     if (result.ok) {
       setResults(result.value);
+      setIsSearching(false);
     } else {
       setResults([]);
       setIsSearching(false);

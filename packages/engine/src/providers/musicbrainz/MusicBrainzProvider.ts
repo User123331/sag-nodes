@@ -48,7 +48,7 @@ export class MusicBrainzProvider implements ProviderAdapter {
     this.cache = options.cache ?? new LruCache(500);
     this.userAgent = options.userAgent ?? USER_AGENT;
     this.ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
-    this.fetchFn = options.fetchFn ?? fetch;
+    this.fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
   }
 
   async searchArtist(query: string): Promise<Result<ArtistSummary[], ProviderError>> {

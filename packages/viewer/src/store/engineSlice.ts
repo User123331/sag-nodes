@@ -15,7 +15,7 @@ export const createEngineSlice: StateCreator<EngineSlice> = (set) => ({
   engine: null,
   isExploring: false,
   isExpanding: false,
-  initEngine: (config) => set({ engine: createEngine(config ?? {}) }),
+  initEngine: (config) => set({ engine: createEngine({ deezerBaseUrl: '/deezer-proxy', ...config }) }),
   setIsExploring: (v) => set({ isExploring: v }),
   setIsExpanding: (v) => set({ isExpanding: v }),
 });

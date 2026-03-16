@@ -28,7 +28,7 @@ export class EntityResolver {
       ...(options.queue !== undefined ? { queue: options.queue } : {}),
     });
     this.cache = options.cache ?? new LruCache(1000);
-    this.fetchFn = options.fetchFn ?? fetch;
+    this.fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
     this.fuzzyThreshold = options.fuzzyThreshold ?? FUZZY_THRESHOLD;
   }
 

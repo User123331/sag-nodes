@@ -53,7 +53,7 @@ export class SpotifyProvider implements ProviderAdapter {
     this.queue = options.queue ?? new RequestQueue({ providerId: 'spotify', requestsPerSecond: 5 });
     this.cache = options.cache ?? new LruCache(500);
     this.ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
-    this.fetchFn = options.fetchFn ?? fetch;
+    this.fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
     this.getNow = options.getNow ?? Date.now;
   }
 

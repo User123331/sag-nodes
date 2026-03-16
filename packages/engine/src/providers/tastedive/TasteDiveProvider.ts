@@ -48,7 +48,7 @@ export class TasteDiveProvider implements ProviderAdapter {
     this.queue = options.queue ?? new RequestQueue({ providerId: 'tastedive', requestsPerSecond: 0.05 });
     this.cache = options.cache ?? new LruCache(500);
     this.ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
-    this.fetchFn = options.fetchFn ?? fetch;
+    this.fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
     if (options.proxyUrl !== undefined) this.proxyUrl = options.proxyUrl;
     this.limit = options.limit ?? 20;
   }

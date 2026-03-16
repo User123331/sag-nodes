@@ -15,6 +15,7 @@ export interface EngineConfig {
   readonly maxDepth?: number;        // default 2
   readonly cache?: CacheStore;
   readonly fetchFn?: typeof fetch;
+  readonly deezerBaseUrl?: string;   // override for browser proxy (e.g. '/deezer-proxy')
 }
 
 export interface ExploreResult extends ArtistGraphData {

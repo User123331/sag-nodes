@@ -27,7 +27,7 @@ export class EngineImpl implements EngineInterface {
 
   constructor(config: EngineConfig = {}) {
     const cache = config.cache ?? new LruCache(1000);
-    const fetchFn = config.fetchFn ?? fetch;
+    const fetchFn = config.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
 
     const mbProvider = new MusicBrainzProvider({ cache, fetchFn });
     this.resolver = new EntityResolver({ mbProvider, cache, fetchFn });
@@ -62,7 +62,11 @@ export class EngineImpl implements EngineInterface {
     }
 
     // Deezer — no auth required, but needs Deezer ID lookup
-    const deezerProvider = new DeezerProvider({ cache, fetchFn });
+    const deezerProvider = new DeezerProvider({
+      cache,
+      fetchFn,
+      ...(config.deezerBaseUrl !== undefined ? { baseUrl: config.deezerBaseUrl } : {}),
+    });
     this.providers.push({
       id: 'deezer',
       getSimilar: (deezerId) => deezerProvider.getSimilarArtists(deezerId),

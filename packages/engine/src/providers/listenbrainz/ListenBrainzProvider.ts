@@ -44,7 +44,7 @@ export class ListenBrainzProvider implements ProviderAdapter {
     this.queue = options.queue ?? new RequestQueue({ providerId: 'listenbrainz', requestsPerSecond: 2 });
     this.cache = options.cache ?? new LruCache(500);
     this.ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
-    this.fetchFn = options.fetchFn ?? fetch;
+    this.fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
     this.mode = options.mode ?? 'easy';
     this.maxSimilarArtists = options.maxSimilarArtists ?? 20;
   }

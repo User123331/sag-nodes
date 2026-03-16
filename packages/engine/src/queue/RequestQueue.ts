@@ -111,7 +111,9 @@ export class RequestQueue {
       return ok(value);
     } catch (e: unknown) {
       const providerError = this.toProviderError(e);
-      const isRetryable = providerError.kind === 'RateLimitError' || providerError.kind === 'NetworkError';
+      // TypeError = browser-blocked request (CORS, mixed content) — retrying will never succeed
+      const isRetryable = !(e instanceof TypeError) &&
+        (providerError.kind === 'RateLimitError' || providerError.kind === 'NetworkError');
 
       if (isRetryable && attempt < this.config.maxRetries) {
         if (providerError.kind === 'RateLimitError') {

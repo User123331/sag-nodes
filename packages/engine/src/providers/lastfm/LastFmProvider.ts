@@ -45,7 +45,7 @@ export class LastFmProvider implements ProviderAdapter {
     this.queue = options.queue ?? new RequestQueue({ providerId: 'lastfm', requestsPerSecond: 3 });
     this.cache = options.cache ?? new LruCache(500);
     this.ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
-    this.fetchFn = options.fetchFn ?? fetch;
+    this.fetchFn = options.fetchFn ?? ((...args: Parameters<typeof fetch>) => fetch(...args));
     this.limit = options.limit ?? 50;
   }
 
