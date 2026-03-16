@@ -28,13 +28,13 @@ export function tagToFamily(tags: ReadonlyArray<string>): GenreFamily {
   return 'other';
 }
 
+export const NO_GENRE_COLOR = '#4a4a4a';
+
 // Genre family index maps to schemeTableau10 array position
 // rock=#4e79a7, electronic=#f28e2b, metal=#e15759, jazz=#76b7b2, folk=#59a14f,
 // pop=#edc948, classical=#b07aa1, r&b=#ff9da7, hip-hop=#9c755f, other=#bab0ac
 export function genreColor(tags: ReadonlyArray<string>): string {
   const family = tagToFamily(tags);
   const index = GENRE_FAMILIES.indexOf(family);
-  return schemeTableau10[index];
+  return schemeTableau10[index] ?? NO_GENRE_COLOR;
 }
-
-export const NO_GENRE_COLOR = '#4a4a4a';
