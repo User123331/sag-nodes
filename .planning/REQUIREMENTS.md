@@ -33,12 +33,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Graph Engine
 
-- [ ] **GRPH-01**: Graph builder that constructs unified ArtistNode[] and SimilarityEdge[] from multi-provider data
-- [ ] **GRPH-02**: Weighted similarity score fusion from multiple providers per edge
-- [ ] **GRPH-03**: Node deduplication — same artist from multiple providers or expansion paths is one node
-- [ ] **GRPH-04**: Recursive traversal logic (BFS expansion from any node)
-- [ ] **GRPH-05**: Node budget enforcement (default 150, max 200) to prevent graph explosion
-- [ ] **GRPH-06**: Per-edge provider attribution (which providers contributed, raw scores)
+- [x] **GRPH-01**: Graph builder that constructs unified ArtistNode[] and SimilarityEdge[] from multi-provider data
+- [x] **GRPH-02**: Weighted similarity score fusion from multiple providers per edge
+- [x] **GRPH-03**: Node deduplication — same artist from multiple providers or expansion paths is one node
+- [x] **GRPH-04**: Recursive traversal logic (BFS expansion from any node)
+- [x] **GRPH-05**: Node budget enforcement (default 150, max 200) to prevent graph explosion
+- [x] **GRPH-06**: Per-edge provider attribution (which providers contributed, raw scores)
 
 ### Rate Limiting & Caching
 
@@ -100,8 +100,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Packaging
 
-- [ ] **PKG-01**: Engine publishable as standalone npm package (@similar-artists-graph/engine)
-- [ ] **PKG-02**: Engine runs in Node.js and browser (no browser-only dependencies)
+- [x] **PKG-01**: Engine publishable as standalone npm package (@similar-artists-graph/engine)
+- [x] **PKG-02**: Engine runs in Node.js and browser (no browser-only dependencies)
 - [ ] **PKG-03**: Viewer components individually exportable for Next.js consumption
 - [ ] **PKG-04**: Dynamic import friendly — graph component loadable via next/dynamic with { ssr: false }
 
@@ -163,14 +163,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | IDEN-01 | Phase 2 | Complete |
 | IDEN-02 | Phase 2 | Complete |
 | IDEN-03 | Phase 2 | Complete |
-| GRPH-01 | Phase 2 | Pending |
-| GRPH-02 | Phase 2 | Pending |
-| GRPH-03 | Phase 2 | Pending |
-| GRPH-04 | Phase 2 | Pending |
-| GRPH-05 | Phase 2 | Pending |
-| GRPH-06 | Phase 2 | Pending |
-| PKG-01 | Phase 2 | Pending |
-| PKG-02 | Phase 2 | Pending |
+| GRPH-01 | Phase 2 | Complete |
+| GRPH-02 | Phase 2 | Complete |
+| GRPH-03 | Phase 2 | Complete |
+| GRPH-04 | Phase 2 | Complete |
+| GRPH-05 | Phase 2 | Complete |
+| GRPH-06 | Phase 2 | Complete |
+| PKG-01 | Phase 2 | Complete |
+| PKG-02 | Phase 2 | Complete |
 | VIS-01 | Phase 3 | Pending |
 | VIS-02 | Phase 3 | Pending |
 | VIS-03 | Phase 3 | Pending |

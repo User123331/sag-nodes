@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md (provider adapters + EntityResolver)
-last_updated: "2026-03-16T02:47:31.277Z"
-last_activity: 2026-03-16 -- Plan 01-01 complete (monorepo scaffold)
+stopped_at: Completed 02-02-PLAN.md (graph builder + engine facade)
+last_updated: "2026-03-16T09:56:27.000Z"
+last_activity: 2026-03-16 -- Plan 02-02 complete (graph builder + engine facade)
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 4
-  completed_plans: 3
-  percent: 50
+  completed_plans: 4
+  percent: 75
 ---
 
 # Project State
@@ -21,37 +21,39 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Anyone can type an artist name and instantly explore their relational neighborhood as a rich, interactive graph with cross-platform metadata depth.
-**Current focus:** Phase 1 - Engine Foundation
+**Current focus:** Phase 2 - Multi-Provider Data Pipeline (complete)
 
 ## Current Position
 
-Phase: 1 of 4 (Engine Foundation)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-03-16 -- Plan 01-01 complete (monorepo scaffold)
+Phase: 2 of 4 (Multi-Provider Data Pipeline)
+Plan: 2 of 2 in current phase
+Status: Phase 2 Complete
+Last activity: 2026-03-16 -- Plan 02-02 complete (graph builder + engine facade)
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 5 min
-- Total execution time: 0.1 hours
+- Total plans completed: 4
+- Average duration: 8 min
+- Total execution time: 0.6 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-engine-foundation | 1/2 | 5 min | 5 min |
+| 01-engine-foundation | 2/2 | 13 min | 6.5 min |
+| 02-multi-provider-data-pipeline | 2/2 | 19 min | 9.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 5 min
+- Last 5 plans: 8 min
 - Trend: -
 
 *Updated after each plan completion*
 | Phase 01-engine-foundation P01-02 | 8 min | 7 tasks | 21 files |
-| Phase 02-multi-provider-data-pipeline P02-01 | 12 | 8 tasks | 29 files |
+| Phase 02-multi-provider-data-pipeline P02-01 | 12 min | 8 tasks | 29 files |
+| Phase 02-multi-provider-data-pipeline P02-02 | 7 min | 6 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -70,6 +72,10 @@ Recent decisions affecting current work:
 - [Phase 02-multi-provider-data-pipeline]: EntityResolver keeps ambiguous artists as separate candidates — no merging (0.75 MB score threshold, configurable)
 - [Phase 02-multi-provider-data-pipeline]: resolveUrlToMbid calls fetchFn directly (not through mbProvider queue) to avoid rate-limit cascade
 - [Phase 02-multi-provider-data-pipeline]: Browser detection via 'window' in globalThis (not typeof globalThis.window) — required by exactOptionalPropertyTypes strict mode
+- [Phase 02-multi-provider-data-pipeline]: GraphBuilder uses hard cap Math.min(requested, 200) for maxNodes — prevents unbounded graphs
+- [Phase 02-multi-provider-data-pipeline]: Score fusion is equal average across all providers per edge — simple, predictable, no provider weighting
+- [Phase 02-multi-provider-data-pipeline]: Deezer/TasteDive/Spotify artists require MBID resolution before graph insertion — keeps graph purely MBID-keyed
+- [Phase 02-multi-provider-data-pipeline]: Spotify auto-disabled when no clientId+clientSecret in EngineConfig — key-gated provider pattern
 
 ### Pending Todos
 
@@ -77,11 +83,11 @@ None yet.
 
 ### Blockers/Concerns
 
-- Spotify API restrictions mean PROV-07 may deliver minimal value. Research during Phase 2 planning.
-- TasteDive requires server-side proxy for CORS. Architecture decision needed in Phase 2.
+- Spotify API restrictions mean PROV-07 may deliver minimal value. Research during Phase 3 planning.
+- TasteDive requires server-side proxy for CORS. Architecture decision needed in Phase 3.
 
 ## Session Continuity
 
-Last session: 2026-03-16T02:47:31.275Z
-Stopped at: Completed 02-01-PLAN.md (provider adapters + EntityResolver)
+Last session: 2026-03-16T09:56:27.000Z
+Stopped at: Completed 02-02-PLAN.md (graph builder + engine facade)
 Resume file: None
