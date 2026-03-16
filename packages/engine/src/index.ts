@@ -2,3 +2,7 @@ export const ENGINE_VERSION = '0.1.0';
 export * from './types/index.js';
 export type { CacheStore } from './cache/index.js';
 export { LruCache } from './cache/index.js';
+export { RequestQueue } from './queue/index.js';
+export type { QueueConfig, QueueStatus, QueueEventType, QueueEventListener } from './queue/index.js';
+export { calculateBackoff } from './queue/index.js';
+export type { BackoffConfig } from './queue/index.js';
