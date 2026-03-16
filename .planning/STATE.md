@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-03-16T22:53:11.063Z"
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-03-16T23:14:37.557Z"
 last_activity: 2026-03-16 -- Plan 03-02 complete (SearchBar + GraphCanvas + App layout)
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 9
-  completed_plans: 8
+  completed_plans: 9
   percent: 85
 ---
 
@@ -59,6 +59,7 @@ Progress: [████████░░] 85%
 | Phase 03-interactive-viewer P03-02 | 15 min | 2 tasks | 8 files |
 | Phase 03-interactive-viewer P03 | 20 | 3 tasks | 6 files |
 | Phase 03-interactive-viewer P04 | 11 | 2 tasks | 6 files |
+| Phase 03-interactive-viewer P05 | 15 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,8 @@ Recent decisions affecting current work:
 - [Phase 03-interactive-viewer]: Reversed Phase 02 decision: resolveUrlToMbid now routes through MusicBrainzProvider.queuedFetch() — queue throttling prevents MusicBrainz 503 floods on double-click expansion
 - [Phase 03-interactive-viewer]: UUID_REGEX guard in Engine.expand() rejects non-UUID mbid args immediately without touching any provider — prevents garbage Deezer IDs from corrupting subsequent requests
 - [Phase 03-interactive-viewer]: EngineConfig.mbQueue optional injection pattern lets tests bypass 1 req/s throttle while production uses default queue
+- [Phase 03-interactive-viewer]: × button visibility uses hasGraph (seedMbid !== null) — graph existence is the correct predicate, not selectedArtist
+- [Phase 03-interactive-viewer]: Engine.explore() resets graphBuilder before each new exploration to prevent stale node persistence after Reset
 
 ### Pending Todos
 
@@ -105,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T22:53:11.059Z
-Stopped at: Completed 03-04-PLAN.md
+Last session: 2026-03-16T23:14:37.554Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None
