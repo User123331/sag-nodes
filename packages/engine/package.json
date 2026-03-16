@@ -1,0 +1,31 @@
+{
+  "name": "@similar-artists-graph/engine",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}
