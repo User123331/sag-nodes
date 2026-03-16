@@ -55,7 +55,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **VIS-04**: Edge thickness/opacity by similarity strength
 - [x] **VIS-05**: Zoom, pan, drag interactions (mouse + trackpad)
 - [x] **VIS-06**: Click-to-expand — clicking a node fetches and renders its similar artists
-- [ ] **VIS-07**: Expansion animation — new nodes bloom outward from clicked node
+- [x] **VIS-07**: Expansion animation — new nodes bloom outward from clicked node
 - [x] **VIS-08**: Performance target — 200+ nodes rendered without noticeable lag
 
 ### Search
@@ -66,12 +66,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Detail Panel
 
-- [ ] **DETL-01**: Slide-in panel on node click showing artist name, genres, image
-- [ ] **DETL-02**: Cross-platform metadata display (listener counts, fan counts, tags from all providers)
-- [ ] **DETL-03**: External links (Spotify, Apple Music, YouTube, Last.fm, Deezer)
-- [ ] **DETL-04**: Similarity score to seed artist
-- [ ] **DETL-05**: List of connected artists in current graph
-- [ ] **DETL-06**: "Expand" button to trigger recursive expansion from this node
+- [x] **DETL-01**: Slide-in panel on node click showing artist name, genres, image
+- [x] **DETL-02**: Cross-platform metadata display (listener counts, fan counts, tags from all providers)
+- [x] **DETL-03**: External links (Spotify, Apple Music, YouTube, Last.fm, Deezer)
+- [x] **DETL-04**: Similarity score to seed artist
+- [x] **DETL-05**: List of connected artists in current graph
+- [x] **DETL-06**: "Expand" button to trigger recursive expansion from this node
 
 ### Control Panel
 
@@ -177,17 +177,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIS-04 | Phase 3 | Complete |
 | VIS-05 | Phase 3 | Complete |
 | VIS-06 | Phase 3 | Complete |
-| VIS-07 | Phase 3 | Pending |
+| VIS-07 | Phase 3 | Complete |
 | VIS-08 | Phase 3 | Complete |
 | SRCH-01 | Phase 3 | Complete |
 | SRCH-02 | Phase 3 | Complete |
 | SRCH-03 | Phase 3 | Complete |
-| DETL-01 | Phase 3 | Pending |
-| DETL-02 | Phase 3 | Pending |
-| DETL-03 | Phase 3 | Pending |
-| DETL-04 | Phase 3 | Pending |
-| DETL-05 | Phase 3 | Pending |
-| DETL-06 | Phase 3 | Pending |
+| DETL-01 | Phase 3 | Complete |
+| DETL-02 | Phase 3 | Complete |
+| DETL-03 | Phase 3 | Complete |
+| DETL-04 | Phase 3 | Complete |
+| DETL-05 | Phase 3 | Complete |
+| DETL-06 | Phase 3 | Complete |
 | UI-01 | Phase 3 | Complete |
 | UI-02 | Phase 3 | Complete |
 | UI-03 | Phase 3 | Complete |
