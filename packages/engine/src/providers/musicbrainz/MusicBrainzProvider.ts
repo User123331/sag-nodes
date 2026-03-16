@@ -18,6 +18,7 @@ export interface MusicBrainzProviderOptions {
   readonly userAgent?: string;
   readonly ttlMs?: number;
   readonly fetchFn?: typeof fetch;
+  readonly queue?: RequestQueue;
 }
 
 export class MusicBrainzProvider implements ProviderAdapter {
@@ -40,7 +41,7 @@ export class MusicBrainzProvider implements ProviderAdapter {
   private readonly fetchFn: typeof fetch;
 
   constructor(options: MusicBrainzProviderOptions = {}) {
-    this.queue = new RequestQueue({
+    this.queue = options.queue ?? new RequestQueue({
       providerId: 'musicbrainz',
       requestsPerSecond: 1,
     });
