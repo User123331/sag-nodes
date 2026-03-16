@@ -24,11 +24,16 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
+    "@types/string-similarity": "^4.0.2",
+    "graphology-types": "^0.24.8",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "p-queue": "^9.1.0"
+    "graphology": "^0.26.0",
+    "graphology-traversal": "^0.3.1",
+    "p-queue": "^9.1.0",
+    "string-similarity": "^4.0.4"
   }
 }

@@ -7,5 +7,5 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   treeshake: true,
-  noExternal: ['p-queue'],
+  noExternal: ['p-queue', 'graphology', 'graphology-traversal', 'string-similarity'],
 });
