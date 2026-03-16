@@ -6,3 +6,5 @@ export { RequestQueue } from './queue/index.js';
 export type { QueueConfig, QueueStatus, QueueEventType, QueueEventListener } from './queue/index.js';
 export { calculateBackoff } from './queue/index.js';
 export type { BackoffConfig } from './queue/index.js';
+export { MusicBrainzProvider } from './providers/musicbrainz/index.js';
+export type { MusicBrainzProviderOptions } from './providers/musicbrainz/index.js';
