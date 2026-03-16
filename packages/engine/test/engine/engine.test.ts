@@ -346,4 +346,118 @@ describe('Engine', () => {
 
     expect(result.error.kind).toBe('NotFoundError');
   });
+
+  describe('UUID guard and unresolved-artist filter (gap-closure 03-04)', () => {
+    it('expand("7002959") — numeric Deezer ID — returns NotFoundError without calling any provider', async () => {
+      const mockFetch = vi.fn() as unknown as typeof fetch;
+
+      const engine = createEngine({
+        fetchFn: mockFetch,
+        mbQueue: makeFastMbQueue(),
+      });
+
+      const result = await engine.expand('7002959');
+
+      expect(result.ok).toBe(false);
+      if (result.ok) return;
+
+      expect(result.error.kind).toBe('NotFoundError');
+      // No API calls should have been made — UUID guard fires before any provider
+      expect((mockFetch as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
+    });
+
+    it('expand() with a valid UUID that IS in the graph proceeds normally', async () => {
+      const mockFetch = createRoutedMockFetch(createRadioheadRoutes());
+      const engine = createEngine({
+        providers: { lastfm: { apiKey: 'test-api-key' } },
+        fetchFn: mockFetch,
+        mbQueue: makeFastMbQueue(),
+      });
+
+      // First: build graph via explore
+      const exploreResult = await engine.explore('Radiohead');
+      expect(exploreResult.ok).toBe(true);
+      if (!exploreResult.ok) return;
+
+      const seedMbid = exploreResult.value.seedMbid; // valid UUID
+      const expandResult = await engine.expand(seedMbid);
+
+      // Should succeed — valid UUID that is in the graph
+      expect(expandResult.ok).toBe(true);
+    });
+
+    it('fetchAndMergeSimilar: unresolvable Deezer artists (null in resolvedMbids) are not inserted into the graph', async () => {
+      // Deezer returns 2 artists — only 1 resolves to an MBID via MB URL lookup
+      // The second artist's Deezer ID should NOT appear in graph nodes
+      const deezerRelatedWithTwo = {
+        data: [
+          {
+            id: 6404,
+            name: 'Muse',
+            link: 'https://www.deezer.com/artist/6404',
+            picture_medium: 'https://cdn-images.dzcdn.net/images/artist/6404.jpg',
+            nb_album: 25,
+            nb_fan: 790414,
+            radio: true,
+            type: 'artist',
+          },
+          {
+            id: 99999999, // will fail MB URL resolution
+            name: 'Unknown Artist',
+            link: 'https://www.deezer.com/artist/99999999',
+            picture_medium: 'https://cdn-images.dzcdn.net/images/artist/99999999.jpg',
+            nb_album: 1,
+            nb_fan: 100,
+            radio: false,
+            type: 'artist',
+          },
+        ],
+        total: 2,
+      };
+
+      const mockFetch = createRoutedMockFetch([
+        // MB search for Radiohead
+        { pattern: 'musicbrainz.org/ws/2/artist?', response: { status: 200, body: MOCK_MB_SEARCH_RESPONSE } },
+        // MB artist details (url-rels lookup for seed)
+        { pattern: 'musicbrainz.org/ws/2/artist/a74b1b7f', response: { status: 200, body: MOCK_MB_ARTIST_URL_RELS_RESPONSE } },
+        // ListenBrainz
+        { pattern: 'listenbrainz.org', response: { status: 200, body: {} } },
+        // Deezer search — finds Radiohead with Deezer ID 399
+        { pattern: 'api.deezer.com/search/artist', response: { status: 200, body: MOCK_DEEZER_SEARCH_RESPONSE } },
+        // Deezer related artists — 2 artists, 1 resolvable, 1 not
+        { pattern: 'api.deezer.com/artist/', response: { status: 200, body: deezerRelatedWithTwo } },
+        // MB URL lookup for Deezer ID 6404 (Muse) — resolves to a known MBID
+        {
+          pattern: encodeURIComponent('https://www.deezer.com/artist/6404'),
+          response: {
+            status: 200,
+            body: {
+              relations: [{ type: 'free streaming', artist: { id: '9c9f1380-2516-4fc9-a3e6-f9f61941d090', name: 'Muse' } }],
+            },
+          },
+        },
+        // MB URL lookup for Deezer ID 99999999 — not found
+        { pattern: 'musicbrainz.org/ws/2/url', response: { status: 404, body: {} } },
+      ]);
+
+      const engine = createEngine({
+        fetchFn: mockFetch,
+        mbQueue: makeFastMbQueue(),
+      });
+
+      const result = await engine.explore('Radiohead');
+
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+
+      const nodeMbids = result.value.nodes.map(n => n.mbid);
+
+      // Muse (resolved MBID) should be in the graph
+      expect(nodeMbids).toContain('9c9f1380-2516-4fc9-a3e6-f9f61941d090');
+
+      // Raw Deezer numeric IDs must NOT be in the graph
+      expect(nodeMbids).not.toContain('99999999');
+      expect(nodeMbids).not.toContain(99999999 as unknown as string);
+    });
+  });
 });

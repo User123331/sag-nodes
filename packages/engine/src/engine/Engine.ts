@@ -1,5 +1,7 @@
 import type { Result } from '../types/result.js';
 import type { ProviderError, ProviderId } from '../types/errors.js';
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 import type { SimilarArtist } from '../types/artist.js';
 import { ok, err } from '../types/result.js';
 import { LruCache } from '../cache/LruCache.js';
@@ -155,6 +157,15 @@ export class EngineImpl implements EngineInterface {
   }
 
   async expand(mbid: string): Promise<Result<ExploreResult, ProviderError>> {
+    // Reject non-UUID arguments immediately — prevents garbage IDs from reaching providers
+    if (!UUID_REGEX.test(mbid)) {
+      return err({
+        kind: 'NotFoundError',
+        provider: 'musicbrainz',
+        query: mbid,
+      });
+    }
+
     // Verify the node exists in the graph
     if (!this.graphBuilder.hasNode(mbid)) {
       return err({
@@ -245,9 +256,14 @@ export class EngineImpl implements EngineInterface {
         }
       }
 
+      // Filter out artists that couldn't be resolved to MBIDs — never insert raw platform IDs into graph
+      const resolvedArtists = needsMbidResolution
+        ? artists.filter(a => resolvedMbids!.has(a.id))
+        : artists;
+
       this.graphBuilder.addSimilarArtists(
         seedMbid,
-        artists,
+        resolvedArtists,
         providerId,
         resolvedMbids,
       );
