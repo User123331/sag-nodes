@@ -50,9 +50,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Visualization
 
 - [ ] **VIS-01**: Force-directed graph rendering via react-force-graph-2d with Canvas/WebGL
-- [ ] **VIS-02**: Node sizing by popularity/prominence metric
-- [ ] **VIS-03**: Node coloring by genre cluster (d3-scale-chromatic palette)
-- [ ] **VIS-04**: Edge thickness/opacity by similarity strength
+- [x] **VIS-02**: Node sizing by popularity/prominence metric
+- [x] **VIS-03**: Node coloring by genre cluster (d3-scale-chromatic palette)
+- [x] **VIS-04**: Edge thickness/opacity by similarity strength
 - [ ] **VIS-05**: Zoom, pan, drag interactions (mouse + trackpad)
 - [ ] **VIS-06**: Click-to-expand — clicking a node fetches and renders its similar artists
 - [ ] **VIS-07**: Expansion animation — new nodes bloom outward from clicked node
@@ -60,7 +60,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Search
 
-- [ ] **SRCH-01**: Text input with debounced search using MusicBrainz search API
+- [x] **SRCH-01**: Text input with debounced search using MusicBrainz search API
 - [ ] **SRCH-02**: Autocomplete dropdown with artist candidates and disambiguation
 - [ ] **SRCH-03**: User selects correct artist → triggers initial graph construction
 
@@ -107,9 +107,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### UI/UX
 
-- [ ] **UI-01**: Dark-first minimalist design — near-black background, high-contrast nodes
+- [x] **UI-01**: Dark-first minimalist design — near-black background, high-contrast nodes
 - [ ] **UI-02**: Minimal chrome — search bar top-center, controls bottom-left, detail panel slides right
-- [ ] **UI-03**: Monospace/system font stack, no custom fonts
+- [x] **UI-03**: Monospace/system font stack, no custom fonts
 - [ ] **UI-04**: Loading/progress indicators during multi-provider fetch
 
 ## v2 Requirements
@@ -172,14 +172,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PKG-01 | Phase 2 | Complete |
 | PKG-02 | Phase 2 | Complete |
 | VIS-01 | Phase 3 | Pending |
-| VIS-02 | Phase 3 | Pending |
-| VIS-03 | Phase 3 | Pending |
-| VIS-04 | Phase 3 | Pending |
+| VIS-02 | Phase 3 | Complete |
+| VIS-03 | Phase 3 | Complete |
+| VIS-04 | Phase 3 | Complete |
 | VIS-05 | Phase 3 | Pending |
 | VIS-06 | Phase 3 | Pending |
 | VIS-07 | Phase 3 | Pending |
 | VIS-08 | Phase 3 | Pending |
-| SRCH-01 | Phase 3 | Pending |
+| SRCH-01 | Phase 3 | Complete |
 | SRCH-02 | Phase 3 | Pending |
 | SRCH-03 | Phase 3 | Pending |
 | DETL-01 | Phase 3 | Pending |
@@ -188,9 +188,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DETL-04 | Phase 3 | Pending |
 | DETL-05 | Phase 3 | Pending |
 | DETL-06 | Phase 3 | Pending |
-| UI-01 | Phase 3 | Pending |
+| UI-01 | Phase 3 | Complete |
 | UI-02 | Phase 3 | Pending |
-| UI-03 | Phase 3 | Pending |
+| UI-03 | Phase 3 | Complete |
 | UI-04 | Phase 3 | Pending |
 | CTRL-01 | Phase 4 | Pending |
 | CTRL-02 | Phase 4 | Pending |
