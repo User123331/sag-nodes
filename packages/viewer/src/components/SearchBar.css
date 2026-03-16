@@ -1,0 +1,123 @@
+/* Search Bar container */
+.search-container {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: min(480px, calc(100vw - 64px));
+}
+
+.search-input-wrapper {
+  position: relative;
+}
+
+/* Search input */
+.search-input {
+  display: block;
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  font-family: ui-monospace, 'Cascadia Code', Menlo, 'Courier New', monospace;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.search-input:focus {
+  border: 2px solid var(--color-accent);
+}
+
+/* Post-graph state: translucent with blur */
+.search-input--active {
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.search-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Clear (X) button */
+.search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+  padding: 0;
+  line-height: 1;
+}
+
+.search-clear:hover {
+  color: var(--color-text-primary);
+}
+
+/* Autocomplete dropdown */
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  max-height: 336px;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  padding: 4px 0;
+}
+
+/* Dropdown item */
+.search-item {
+  height: 56px;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.search-item:hover {
+  background: var(--color-surface-hover);
+}
+
+.search-item--highlighted {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.search-item-name {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-item-subtitle {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
