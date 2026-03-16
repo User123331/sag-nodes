@@ -49,20 +49,20 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Visualization
 
-- [ ] **VIS-01**: Force-directed graph rendering via react-force-graph-2d with Canvas/WebGL
+- [x] **VIS-01**: Force-directed graph rendering via react-force-graph-2d with Canvas/WebGL
 - [x] **VIS-02**: Node sizing by popularity/prominence metric
 - [x] **VIS-03**: Node coloring by genre cluster (d3-scale-chromatic palette)
 - [x] **VIS-04**: Edge thickness/opacity by similarity strength
-- [ ] **VIS-05**: Zoom, pan, drag interactions (mouse + trackpad)
-- [ ] **VIS-06**: Click-to-expand — clicking a node fetches and renders its similar artists
+- [x] **VIS-05**: Zoom, pan, drag interactions (mouse + trackpad)
+- [x] **VIS-06**: Click-to-expand — clicking a node fetches and renders its similar artists
 - [ ] **VIS-07**: Expansion animation — new nodes bloom outward from clicked node
-- [ ] **VIS-08**: Performance target — 200+ nodes rendered without noticeable lag
+- [x] **VIS-08**: Performance target — 200+ nodes rendered without noticeable lag
 
 ### Search
 
 - [x] **SRCH-01**: Text input with debounced search using MusicBrainz search API
-- [ ] **SRCH-02**: Autocomplete dropdown with artist candidates and disambiguation
-- [ ] **SRCH-03**: User selects correct artist → triggers initial graph construction
+- [x] **SRCH-02**: Autocomplete dropdown with artist candidates and disambiguation
+- [x] **SRCH-03**: User selects correct artist → triggers initial graph construction
 
 ### Detail Panel
 
@@ -108,9 +108,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### UI/UX
 
 - [x] **UI-01**: Dark-first minimalist design — near-black background, high-contrast nodes
-- [ ] **UI-02**: Minimal chrome — search bar top-center, controls bottom-left, detail panel slides right
+- [x] **UI-02**: Minimal chrome — search bar top-center, controls bottom-left, detail panel slides right
 - [x] **UI-03**: Monospace/system font stack, no custom fonts
-- [ ] **UI-04**: Loading/progress indicators during multi-provider fetch
+- [x] **UI-04**: Loading/progress indicators during multi-provider fetch
 
 ## v2 Requirements
 
@@ -171,17 +171,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GRPH-06 | Phase 2 | Complete |
 | PKG-01 | Phase 2 | Complete |
 | PKG-02 | Phase 2 | Complete |
-| VIS-01 | Phase 3 | Pending |
+| VIS-01 | Phase 3 | Complete |
 | VIS-02 | Phase 3 | Complete |
 | VIS-03 | Phase 3 | Complete |
 | VIS-04 | Phase 3 | Complete |
-| VIS-05 | Phase 3 | Pending |
-| VIS-06 | Phase 3 | Pending |
+| VIS-05 | Phase 3 | Complete |
+| VIS-06 | Phase 3 | Complete |
 | VIS-07 | Phase 3 | Pending |
-| VIS-08 | Phase 3 | Pending |
+| VIS-08 | Phase 3 | Complete |
 | SRCH-01 | Phase 3 | Complete |
-| SRCH-02 | Phase 3 | Pending |
-| SRCH-03 | Phase 3 | Pending |
+| SRCH-02 | Phase 3 | Complete |
+| SRCH-03 | Phase 3 | Complete |
 | DETL-01 | Phase 3 | Pending |
 | DETL-02 | Phase 3 | Pending |
 | DETL-03 | Phase 3 | Pending |
@@ -189,9 +189,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DETL-05 | Phase 3 | Pending |
 | DETL-06 | Phase 3 | Pending |
 | UI-01 | Phase 3 | Complete |
-| UI-02 | Phase 3 | Pending |
+| UI-02 | Phase 3 | Complete |
 | UI-03 | Phase 3 | Complete |
-| UI-04 | Phase 3 | Pending |
+| UI-04 | Phase 3 | Complete |
 | CTRL-01 | Phase 4 | Pending |
 | CTRL-02 | Phase 4 | Pending |
 | CTRL-03 | Phase 4 | Pending |
