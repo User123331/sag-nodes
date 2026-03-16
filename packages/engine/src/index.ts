@@ -21,3 +21,16 @@ export type { SpotifyProviderOptions } from './providers/spotify/index.js';
 export { EntityResolver } from './resolver/index.js';
 export type { EntityResolverOptions } from './resolver/index.js';
 export type { ArtistCandidate, ResolvedIdentity } from './resolver/index.js';
+export { ArtistGraph } from './graph/index.js';
+export { GraphBuilder } from './graph/index.js';
+export type { GraphBuilderOptions } from './graph/index.js';
+export type {
+  NodeAttrs,
+  EdgeAttrs,
+  ArtistNode,
+  SimilarityEdge,
+  ArtistGraphData,
+  ProviderAttribution,
+} from './graph/index.js';
+export { createEngine } from './engine/index.js';
+export type { EngineConfig, Engine, ExploreResult, ProviderCredentials } from './engine/index.js';
