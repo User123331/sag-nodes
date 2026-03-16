@@ -3,6 +3,7 @@ import { Toaster } from 'sonner';
 import { useGraphStore } from './store/index.js';
 import { SearchBar } from './components/SearchBar.js';
 import { GraphCanvas } from './components/GraphCanvas.js';
+import { DetailPanel } from './components/DetailPanel.js';
 import './App.css';
 
 export function App() {
@@ -14,8 +15,9 @@ export function App() {
 
   return (
     <div className="app">
-      <SearchBar />
       <GraphCanvas />
+      <SearchBar />
+      <DetailPanel />
       <Toaster
         position="bottom-center"
         toastOptions={{

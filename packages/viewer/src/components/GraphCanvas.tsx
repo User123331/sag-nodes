@@ -29,12 +29,13 @@ export function GraphCanvas() {
   );
 
   // UI state
-  const { selectedNode, isPanelOpen, expandingMbid, expansionStartTime } = useGraphStore(
+  const { selectedNode, isPanelOpen, expandingMbid, expansionStartTime, reheatCounter } = useGraphStore(
     useShallow(s => ({
       selectedNode: s.selectedNode,
       isPanelOpen: s.isPanelOpen,
       expandingMbid: s.expandingMbid,
       expansionStartTime: s.expansionStartTime,
+      reheatCounter: s.reheatCounter,
     }))
   );
 
@@ -52,6 +53,7 @@ export function GraphCanvas() {
   const setExpandingMbid = useGraphStore(s => s.setExpandingMbid);
   const addExpansion = useGraphStore(s => s.addExpansion);
   const setIsExpanding = useGraphStore(s => s.setIsExpanding);
+  const triggerReheat = useGraphStore(s => s.triggerReheat);
 
   // Refs to avoid stale closures in canvas callbacks
   const seedMbidRef = useRef(seedMbid);
@@ -65,6 +67,19 @@ export function GraphCanvas() {
   useEffect(() => { expandingMbidRef.current = expandingMbid; }, [expandingMbid]);
   useEffect(() => { expansionStartTimeRef.current = expansionStartTime; }, [expansionStartTime]);
   useEffect(() => { nodesRef.current = nodes; }, [nodes]);
+
+  // Watch reheatCounter — when DetailPanel triggers reheat, fire d3ReheatSimulation and unpin after 1500ms
+  useEffect(() => {
+    if (reheatCounter === 0) return;
+    graphRef.current?.d3ReheatSimulation();
+    const timer = setTimeout(() => {
+      nodesRef.current.forEach((n: ForceNode) => {
+        delete (n as { fx?: number | null }).fx;
+        delete (n as { fy?: number | null }).fy;
+      });
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [reheatCounter]);
 
   // Canvas dimensions
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -102,15 +117,9 @@ export function GraphCanvas() {
       const result = await engine.expand(node.mbid);
       if (result.ok) {
         addExpansion(result.value, node);
-        graphRef.current?.d3ReheatSimulation();
-
-        // After 1500ms, unpin all nodes (delete fx/fy so d3 treats them as unset)
-        setTimeout(() => {
-          nodesRef.current.forEach((n: ForceNode) => {
-            delete (n as { fx?: number | null }).fx;
-            delete (n as { fy?: number | null }).fy;
-          });
-        }, 1500);
+        // triggerReheat increments reheatCounter, which the useEffect above watches
+        // to call d3ReheatSimulation and unpin nodes after 1500ms
+        triggerReheat();
 
         if (result.value.truncated) {
           toast(`Node limit reached (${nodes.length}/150). Graph is at maximum size.`, { duration: 5000 });
@@ -129,7 +138,7 @@ export function GraphCanvas() {
       setExpandingMbid(null);
       setIsExpanding(false);
     }
-  }, [engine, setExpandingMbid, setIsExpanding, addExpansion, nodes.length]);
+  }, [engine, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat, nodes.length]);
 
   const handleNodeClick = useCallback((node: ForceNode) => {
     if (lastClickedRef.current === node.mbid && clickTimerRef.current !== null) {
