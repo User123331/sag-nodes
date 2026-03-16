@@ -49,7 +49,7 @@ export class TasteDiveProvider implements ProviderAdapter {
     this.cache = options.cache ?? new LruCache(500);
     this.ttlMs = options.ttlMs ?? DEFAULT_TTL_MS;
     this.fetchFn = options.fetchFn ?? fetch;
-    this.proxyUrl = options.proxyUrl;
+    if (options.proxyUrl !== undefined) this.proxyUrl = options.proxyUrl;
     this.limit = options.limit ?? 20;
   }
 
@@ -66,7 +66,7 @@ export class TasteDiveProvider implements ProviderAdapter {
     }
 
     // Browser environment detection: skip TasteDive if no proxy configured
-    const isBrowser = typeof globalThis.window !== 'undefined';
+    const isBrowser = 'window' in globalThis;
     if (isBrowser && !this.proxyUrl) {
       return ok([]); // Silently return empty — TasteDive cannot be used without proxy in browser
     }

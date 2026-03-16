@@ -23,9 +23,9 @@ export class EntityResolver {
 
   constructor(options: EntityResolverOptions = {}) {
     this.mbProvider = options.mbProvider ?? new MusicBrainzProvider({
-      cache: options.cache,
-      fetchFn: options.fetchFn,
-      queue: options.queue,
+      ...(options.cache !== undefined ? { cache: options.cache } : {}),
+      ...(options.fetchFn !== undefined ? { fetchFn: options.fetchFn } : {}),
+      ...(options.queue !== undefined ? { queue: options.queue } : {}),
     });
     this.cache = options.cache ?? new LruCache(1000);
     this.fetchFn = options.fetchFn ?? fetch;
@@ -135,11 +135,13 @@ export class EntityResolver {
     for (const { url } of urls) {
       if (url.includes('open.spotify.com/artist/')) {
         const parts = url.split('/');
-        platformIds.spotifyId = parts[parts.length - 1];
+        const id = parts[parts.length - 1];
+        if (id !== undefined) platformIds.spotifyId = id;
       }
       if (url.includes('deezer.com/artist/')) {
         const parts = url.split('/');
-        platformIds.deezerId = parts[parts.length - 1];
+        const id = parts[parts.length - 1];
+        if (id !== undefined) platformIds.deezerId = id;
       }
     }
 
