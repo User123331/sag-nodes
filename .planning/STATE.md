@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-engine-foundation 01-02-PLAN.md
-last_updated: "2026-03-16T01:33:52.593Z"
+stopped_at: Completed 02-01-PLAN.md (provider adapters + EntityResolver)
+last_updated: "2026-03-16T02:47:31.277Z"
 last_activity: 2026-03-16 -- Plan 01-01 complete (monorepo scaffold)
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 4
+  completed_plans: 3
   percent: 50
 ---
 
@@ -51,6 +51,7 @@ Progress: [█████░░░░░] 50%
 
 *Updated after each plan completion*
 | Phase 01-engine-foundation P01-02 | 8 min | 7 tasks | 21 files |
+| Phase 02-multi-provider-data-pipeline P02-01 | 12 | 8 tasks | 29 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,9 @@ Recent decisions affecting current work:
 - [Phase 01-engine-foundation]: Result<T,E> discriminated union is the provider contract — callers narrow on .ok, providers never throw
 - [Phase 01-engine-foundation]: Injectable queue/cache/fetchFn pattern in providers enables fast unit tests without real network or backoff delays
 - [Phase 01-engine-foundation]: exactOptionalPropertyTypes strictness: use conditional spread for optional fields in mapper functions
+- [Phase 02-multi-provider-data-pipeline]: EntityResolver keeps ambiguous artists as separate candidates — no merging (0.75 MB score threshold, configurable)
+- [Phase 02-multi-provider-data-pipeline]: resolveUrlToMbid calls fetchFn directly (not through mbProvider queue) to avoid rate-limit cascade
+- [Phase 02-multi-provider-data-pipeline]: Browser detection via 'window' in globalThis (not typeof globalThis.window) — required by exactOptionalPropertyTypes strict mode
 
 ### Pending Todos
 
@@ -78,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T01:32:53.984Z
-Stopped at: Completed 01-engine-foundation 01-02-PLAN.md
+Last session: 2026-03-16T02:47:31.275Z
+Stopped at: Completed 02-01-PLAN.md (provider adapters + EntityResolver)
 Resume file: None

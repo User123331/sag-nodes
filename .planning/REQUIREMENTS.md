@@ -19,17 +19,17 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **PROV-01**: Provider interface contract (searchArtist, getSimilarArtists, resolveIdentity)
 - [x] **PROV-02**: MusicBrainz provider — artist search, metadata, MBID resolution (no auth required)
-- [ ] **PROV-03**: ListenBrainz provider — similar artists via session-based collaborative filtering (no auth required)
-- [ ] **PROV-04**: Last.fm provider — similar artists with scored matches, artist metadata (free API key)
-- [ ] **PROV-05**: Deezer provider — related artists, genres, fan counts (no auth required)
-- [ ] **PROV-06**: TasteDive provider — similar artist recommendations (free API key, needs server proxy for CORS)
-- [ ] **PROV-07**: Spotify provider — whatever endpoints remain accessible; optional credential-based (research workarounds first)
+- [x] **PROV-03**: ListenBrainz provider — similar artists via session-based collaborative filtering (no auth required)
+- [x] **PROV-04**: Last.fm provider — similar artists with scored matches, artist metadata (free API key)
+- [x] **PROV-05**: Deezer provider — related artists, genres, fan counts (no auth required)
+- [x] **PROV-06**: TasteDive provider — similar artist recommendations (free API key, needs server proxy for CORS)
+- [x] **PROV-07**: Spotify provider — whatever endpoints remain accessible; optional credential-based (research workarounds first)
 
 ### Identity Resolution
 
-- [ ] **IDEN-01**: MBID-anchored canonical artist identity mapping across all providers
-- [ ] **IDEN-02**: Fuzzy name matching fallback when MBID is unavailable (string-similarity)
-- [ ] **IDEN-03**: Cross-platform ID mapping cache (Last.fm name → MBID, Deezer ID → MBID, etc.)
+- [x] **IDEN-01**: MBID-anchored canonical artist identity mapping across all providers
+- [x] **IDEN-02**: Fuzzy name matching fallback when MBID is unavailable (string-similarity)
+- [x] **IDEN-03**: Cross-platform ID mapping cache (Last.fm name → MBID, Deezer ID → MBID, etc.)
 
 ### Graph Engine
 
@@ -155,14 +155,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RATE-02 | Phase 1 | Complete |
 | RATE-03 | Phase 1 | Complete |
 | RATE-04 | Phase 1 | Complete |
-| PROV-03 | Phase 2 | Pending |
-| PROV-04 | Phase 2 | Pending |
-| PROV-05 | Phase 2 | Pending |
-| PROV-06 | Phase 2 | Pending |
-| PROV-07 | Phase 2 | Pending |
-| IDEN-01 | Phase 2 | Pending |
-| IDEN-02 | Phase 2 | Pending |
-| IDEN-03 | Phase 2 | Pending |
+| PROV-03 | Phase 2 | Complete |
+| PROV-04 | Phase 2 | Complete |
+| PROV-05 | Phase 2 | Complete |
+| PROV-06 | Phase 2 | Complete |
+| PROV-07 | Phase 2 | Complete |
+| IDEN-01 | Phase 2 | Complete |
+| IDEN-02 | Phase 2 | Complete |
+| IDEN-03 | Phase 2 | Complete |
 | GRPH-01 | Phase 2 | Pending |
 | GRPH-02 | Phase 2 | Pending |
 | GRPH-03 | Phase 2 | Pending |
