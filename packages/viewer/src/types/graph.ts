@@ -5,6 +5,7 @@ export interface ForceNode {
   name: string;
   disambiguation?: string;
   sources: ProviderId[];
+  depthFromSeed: number;
   metadata?: {
     nb_fan?: number;
     imageUrl?: string;
@@ -33,6 +34,7 @@ export function toForceNode(node: ArtistNode): ForceNode {
   return {
     mbid: node.mbid,
     name: node.name,
+    depthFromSeed: 0, // overridden by graphSlice context (setGraph/addExpansion)
     ...(node.disambiguation !== undefined ? { disambiguation: node.disambiguation } : {}),
     sources: [...node.sources],
     ...(node.metadata !== undefined ? {

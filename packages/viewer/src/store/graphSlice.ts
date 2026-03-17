@@ -19,7 +19,11 @@ export const createGraphSlice: StateCreator<GraphSlice> = (set, get) => ({
   seedMbid: null,
   truncated: false,
   setGraph: (result) => set({
-    nodes: result.nodes.map(toForceNode),
+    nodes: result.nodes.map((n) => {
+      const node = toForceNode(n);
+      node.depthFromSeed = n.mbid === result.seedMbid ? 0 : 1;
+      return node;
+    }),
     links: result.edges.map(toForceLink),
     seedMbid: result.seedMbid,
     truncated: result.truncated,
@@ -32,10 +36,12 @@ export const createGraphSlice: StateCreator<GraphSlice> = (set, get) => ({
     existing.forEach((n: ForceNode) => { n.fx = n.x ?? null; n.fy = n.y ?? null; });
 
     // New nodes spawn at expanding node's position
+    const newDepth = expandingNode.depthFromSeed + 1;
     const newNodes = result.nodes
       .filter((n: { mbid: string }) => !existingMbids.has(n.mbid))
       .map((n: typeof result.nodes[number]): ForceNode => ({
         ...toForceNode(n),
+        depthFromSeed: newDepth,
         ...(expandingNode.x !== undefined ? { x: expandingNode.x } : {}),
         ...(expandingNode.y !== undefined ? { y: expandingNode.y } : {}),
       }));
