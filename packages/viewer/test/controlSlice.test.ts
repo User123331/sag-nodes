@@ -50,6 +50,12 @@ describe('controlSlice', () => {
     expect(store.getState().layoutMode).toBe('radial');
   });
 
+  it('setLayoutMode accepts cluster', () => {
+    const store = makeStore();
+    store.getState().setLayoutMode('cluster');
+    expect(store.getState().layoutMode).toBe('cluster');
+  });
+
   it('setSidebarExpanded updates isSidebarExpanded', () => {
     const store = makeStore();
     store.getState().setSidebarExpanded(true);

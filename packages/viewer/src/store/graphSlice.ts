@@ -35,13 +35,15 @@ export const createGraphSlice: StateCreator<GraphSlice> = (set, get) => ({
     // Pin all existing nodes at their current positions
     existing.forEach((n: ForceNode) => { n.fx = n.x ?? null; n.fy = n.y ?? null; });
 
-    // New nodes spawn at expanding node's position
+    // New nodes spawn at expanding node's position with addedAt timestamp
     const newDepth = expandingNode.depthFromSeed + 1;
+    const now = Date.now();
     const newNodes = result.nodes
       .filter((n: { mbid: string }) => !existingMbids.has(n.mbid))
       .map((n: typeof result.nodes[number]): ForceNode => ({
         ...toForceNode(n),
         depthFromSeed: newDepth,
+        addedAt: now,
         ...(expandingNode.x !== undefined ? { x: expandingNode.x } : {}),
         ...(expandingNode.y !== undefined ? { y: expandingNode.y } : {}),
       }));

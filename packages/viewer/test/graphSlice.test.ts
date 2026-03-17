@@ -172,6 +172,37 @@ describe('graphSlice', () => {
     expect(state.links).toHaveLength(3);
   });
 
+  it('addExpansion sets addedAt on new nodes', () => {
+    const store = create<GraphSlice>()(createGraphSlice);
+    store.getState().setGraph(makeMockResult());
+
+    const expandingNode = store.getState().nodes[0];
+    const beforeExpansion = Date.now();
+
+    const expansionResult = makeMockResult({
+      nodes: [
+        ...makeMockResult().nodes,
+        { mbid: 'node-new-at', name: 'New Artist addedAt', sources: ['musicbrainz'] },
+      ],
+      edges: [],
+      nodeCount: 4,
+      edgeCount: 0,
+    });
+
+    store.getState().addExpansion(expansionResult, expandingNode);
+    const afterExpansion = Date.now();
+
+    const newNode = store.getState().nodes.find(n => n.mbid === 'node-new-at');
+    expect(newNode).toBeDefined();
+    expect(typeof newNode?.addedAt).toBe('number');
+    expect(newNode?.addedAt).toBeGreaterThanOrEqual(beforeExpansion);
+    expect(newNode?.addedAt).toBeLessThanOrEqual(afterExpansion);
+
+    // Existing nodes should not have addedAt set
+    const existingNode = store.getState().nodes.find(n => n.mbid === 'node-001');
+    expect(existingNode?.addedAt).toBeUndefined();
+  });
+
   it('clearGraph resets all fields to initial state', () => {
     const store = create<GraphSlice>()(createGraphSlice);
     store.getState().setGraph(makeMockResult());

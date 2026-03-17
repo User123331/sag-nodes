@@ -10,7 +10,7 @@ export interface ControlSlice {
   providerIsFetching: Record<string, boolean>;
   maxDepth: number;
   nodeLimit: number;
-  layoutMode: 'force' | 'radial';
+  layoutMode: 'force' | 'radial' | 'cluster';
   isSidebarExpanded: boolean;
   toggleProvider: (id: ProviderId) => void;
   setProviderStatus: (id: ProviderId, status: 'active' | 'rate-limited' | 'erroring') => void;
@@ -18,7 +18,7 @@ export interface ControlSlice {
   setProviderCooldown: (id: ProviderId, endsAt: number | null) => void;
   setMaxDepth: (n: number) => void;
   setNodeLimit: (n: number) => void;
-  setLayoutMode: (mode: 'force' | 'radial') => void;
+  setLayoutMode: (mode: 'force' | 'radial' | 'cluster') => void;
   setSidebarExpanded: (v: boolean) => void;
   resetControls: () => void;
 }
