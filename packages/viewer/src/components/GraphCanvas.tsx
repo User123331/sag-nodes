@@ -454,21 +454,24 @@ export function GraphCanvas() {
     const ty = target.y ?? 0;
 
     const selected = selectedNodeRef.current;
-    let opacity = Math.max(0.05, link.fusedScore);
+    const connectedToSelected = selected !== null &&
+      (link.sourceMbid === selected.mbid || link.targetMbid === selected.mbid);
 
-    if (selected !== null) {
-      const connectedToSelected =
-        (link.sourceMbid === selected.mbid || link.targetMbid === selected.mbid);
-      if (!connectedToSelected) {
-        opacity = Math.max(0.05, link.fusedScore) * 0.1;
-      }
+    let opacity = Math.max(0.05, link.fusedScore);
+    if (selected !== null && !connectedToSelected) {
+      opacity = Math.max(0.05, link.fusedScore) * 0.1;
     }
 
     ctx.beginPath();
     ctx.moveTo(sx, sy);
     ctx.lineTo(tx, ty);
     ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-    ctx.lineWidth = 1 / globalScale;
+
+    // Edge thickness: 0.5px (weak similarity) to 1.5px (strong similarity), screen-space
+    const baseWidth = 0.5 + link.fusedScore;  // fusedScore 0..1 maps to 0.5..1.5
+    const selectionBoost = connectedToSelected ? 1.5 : 1.0;
+    ctx.lineWidth = (baseWidth * selectionBoost) / globalScale;
+
     ctx.stroke();
   }, []);
 
