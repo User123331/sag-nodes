@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findNearestInDirection } from '../src/utils/keyboardNav.js';
+import { findNearestInDirection, getConnectedNeighbors } from '../src/utils/keyboardNav.js';
 import type { ForceNode } from '../src/types/graph.js';
 
 function makeNode(mbid: string, x: number, y: number): ForceNode {
@@ -68,5 +68,61 @@ describe('findNearestInDirection', () => {
     const belowRight = makeNode('belowRight', 5, 10);
     const result = findNearestInDirection(focused, [focused, belowRight], 'ArrowRight');
     expect(result).toBeNull();
+  });
+});
+
+describe('getConnectedNeighbors', () => {
+  it('returns neighbors sorted descending by fusedScore', () => {
+    const nodeA = makeNode('artist-a', 0, 0);
+    const nodeB = makeNode('artist-b', 1, 0);
+    const nodeC = makeNode('artist-c', 2, 0);
+
+    const links = [
+      { sourceMbid: 'artist-a', targetMbid: 'artist-b', fusedScore: 0.8 },
+      { sourceMbid: 'artist-a', targetMbid: 'artist-c', fusedScore: 0.5 },
+    ];
+    const nodes = [nodeA, nodeB, nodeC];
+
+    const result = getConnectedNeighbors('artist-a', links, nodes);
+    expect(result).toHaveLength(2);
+    expect(result[0]!.mbid).toBe('artist-b');
+    expect(result[1]!.mbid).toBe('artist-c');
+  });
+
+  it('returns empty array when no matching nodes exist in nodes array', () => {
+    const links = [
+      { sourceMbid: 'artist-a', targetMbid: 'artist-b', fusedScore: 0.8 },
+    ];
+    const nodes = [makeNode('artist-a', 0, 0)]; // artist-b not in nodes
+
+    const result = getConnectedNeighbors('artist-a', links, nodes);
+    expect(result).toHaveLength(0);
+  });
+
+  it('returns empty array when links array is empty', () => {
+    const nodes = [makeNode('artist-x', 0, 0), makeNode('artist-y', 1, 0)];
+    const result = getConnectedNeighbors('artist-x', [], nodes);
+    expect(result).toHaveLength(0);
+  });
+
+  it('includes both sourceMbid and targetMbid edges (undirected lookup)', () => {
+    const nodeA = makeNode('artist-a', 0, 0);
+    const nodeB = makeNode('artist-b', 1, 0);
+    const nodeC = makeNode('artist-c', 2, 0);
+
+    // artist-a is targetMbid in first link, sourceMbid in second
+    const links = [
+      { sourceMbid: 'artist-b', targetMbid: 'artist-a', fusedScore: 0.9 },
+      { sourceMbid: 'artist-a', targetMbid: 'artist-c', fusedScore: 0.4 },
+    ];
+    const nodes = [nodeA, nodeB, nodeC];
+
+    const result = getConnectedNeighbors('artist-a', links, nodes);
+    expect(result).toHaveLength(2);
+    const mbids = result.map(n => n.mbid);
+    expect(mbids).toContain('artist-b');
+    expect(mbids).toContain('artist-c');
+    // artist-b has score 0.9, artist-c has score 0.4 -> b comes first
+    expect(result[0]!.mbid).toBe('artist-b');
   });
 });
