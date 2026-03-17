@@ -112,8 +112,11 @@ Plans:
   1. ArtistNode type includes tags field populated by MusicBrainz (and other providers where available)
   2. Graph nodes display distinct colors based on genre cluster, using the existing genreColor() utility
   3. Artists in the same genre family (e.g., rock, electronic, jazz) share similar colors
+**Plans**: 2 plans
 
-Plans: TBD
+Plans:
+- [ ] 06-01-PLAN.md — Engine type chain tags field + MusicBrainz tag enrichment step
+- [ ] 06-02-PLAN.md — HSL hash genreColor, neon ring rendering, DetailPanel genre badges
 
 ### Phase 7: Visual Polish & Animations
 **Goal**: Graph interactions feel alive with entry animations, ambient particle drift, expansion ripples, and a genre-clustered layout mode
@@ -139,5 +142,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Interactive Viewer | 5/5 | Complete   | 2026-03-16 |
 | 4. Controls, Export, and Polish | 3/3 | Complete   | 2026-03-17 |
 | 5. Fix Integration Wiring | 2/2 | Complete   | 2026-03-17 |
-| 6. Genre Coloring Pipeline | 0/0 | Pending | — |
+| 6. Genre Coloring Pipeline | 0/2 | In Progress | — |
 | 7. Visual Polish & Animations | 0/0 | Pending | — |

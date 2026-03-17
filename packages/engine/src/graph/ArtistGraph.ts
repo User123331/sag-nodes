@@ -55,6 +55,9 @@ export class ArtistGraph {
       if (attrs.disambiguation && !existing.disambiguation) {
         this.graph.setNodeAttribute(mbid, 'disambiguation', attrs.disambiguation);
       }
+      if (attrs.tags !== undefined && attrs.tags.length > 0 && (existing.tags === undefined || existing.tags.length === 0)) {
+        this.graph.setNodeAttribute(mbid, 'tags', attrs.tags);
+      }
       return false; // not a new node
     }
 
@@ -95,6 +98,7 @@ export class ArtistGraph {
         name: attrs.name,
         ...(attrs.disambiguation !== undefined ? { disambiguation: attrs.disambiguation } : {}),
         sources: [...attrs.sources],
+        ...(attrs.tags !== undefined ? { tags: attrs.tags } : {}),
         ...(attrs.metadata !== undefined ? { metadata: attrs.metadata } : {}),
       });
     });

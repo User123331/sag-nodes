@@ -10,6 +10,7 @@ export interface NodeAttrs {
   mbid: string;
   disambiguation?: string;
   sources: ProviderId[];
+  tags?: ReadonlyArray<{ name: string; count: number }>;
   metadata?: {
     nb_fan?: number;
     imageUrl?: string;
@@ -28,6 +29,7 @@ export interface ArtistNode {
   readonly name: string;
   readonly disambiguation?: string;
   readonly sources: ReadonlyArray<ProviderId>;
+  readonly tags?: ReadonlyArray<{ name: string; count: number }>;
   readonly metadata?: {
     readonly nb_fan?: number;
     readonly imageUrl?: string;
