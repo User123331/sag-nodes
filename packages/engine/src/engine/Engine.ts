@@ -148,6 +148,7 @@ export class EngineImpl implements EngineInterface {
 
     // Step 2: Fan out to all providers in parallel
     const warnings = await this.fetchAndMergeSimilar(seed.mbid, seed.name);
+    await this.enrichTagsForNodes();
 
     // Step 3: Return graph data
     const graphData = this.graphBuilder.getGraphData();
@@ -182,6 +183,7 @@ export class EngineImpl implements EngineInterface {
 
     // Fan out to all providers
     const warnings = await this.fetchAndMergeSimilar(mbid, name);
+    await this.enrichTagsForNodes();
 
     const graphData = this.graphBuilder.getGraphData();
     return ok({
@@ -205,6 +207,7 @@ export class EngineImpl implements EngineInterface {
     this.graphBuilder.setSeed(mbid, name, disambiguation);
 
     const warnings = await this.fetchAndMergeSimilar(mbid, name);
+    await this.enrichTagsForNodes();
     const graphData = this.graphBuilder.getGraphData();
     return ok({ ...graphData, warnings });
   }
@@ -290,6 +293,20 @@ export class EngineImpl implements EngineInterface {
     }
 
     return warnings;
+  }
+
+  private async enrichTagsForNodes(): Promise<void> {
+    const mbids = this.graphBuilder.getNodeMbids();
+    for (const mbid of mbids) {
+      const attrs = this.graphBuilder.artistGraph.graph.getNodeAttributes(mbid);
+      // Skip nodes that already have tags (populated by resolver or previous enrichment)
+      if (attrs.tags !== undefined && attrs.tags.length > 0) continue;
+
+      const result = await this.resolver.mbProvider.getArtistDetails(mbid);
+      if (result.ok && result.value.tags !== undefined && result.value.tags.length > 0) {
+        this.graphBuilder.artistGraph.graph.setNodeAttribute(mbid, 'tags', result.value.tags);
+      }
+    }
   }
 }
 
