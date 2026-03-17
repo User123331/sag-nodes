@@ -49,7 +49,7 @@ export function useUrlState(): void {
 
     if (depth !== undefined) setMaxDepth(depth);
 
-    void engine.explore(seed).then((result) => {
+    void engine.exploreByMbid(seed).then((result) => {
       if (!result.ok) {
         // Dynamic import to avoid bundling toast at module load time
         import('sonner').then(({ toast }) => {
