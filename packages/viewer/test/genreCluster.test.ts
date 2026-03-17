@@ -1,37 +1,40 @@
 import { describe, it, expect } from 'vitest';
-import { schemeTableau10 } from 'd3-scale-chromatic';
-import { tagToFamily, genreColor, GENRE_FAMILIES } from '../src/utils/genreCluster.js';
-
-describe('tagToFamily', () => {
-  it("returns 'rock' for ['rock']", () => {
-    expect(tagToFamily(['rock'])).toBe('rock');
-  });
-
-  it("returns 'electronic' for ['techno', 'ambient']", () => {
-    expect(tagToFamily(['techno', 'ambient'])).toBe('electronic');
-  });
-
-  it("returns 'other' for unknown tag", () => {
-    expect(tagToFamily(['unknown-tag'])).toBe('other');
-  });
-
-  it("returns 'other' for empty array", () => {
-    expect(tagToFamily([])).toBe('other');
-  });
-});
+import { genreColor, NO_GENRE_COLOR } from '../src/utils/genreCluster.js';
 
 describe('genreColor', () => {
-  it("returns schemeTableau10[0] for ['rock']", () => {
-    expect(genreColor(['rock'])).toBe(schemeTableau10[0]);
+  it('returns NO_GENRE_COLOR for empty array', () => {
+    expect(genreColor([])).toBe(NO_GENRE_COLOR);
   });
 
-  it("returns schemeTableau10[8] for ['hip-hop']", () => {
-    expect(genreColor(['hip-hop'])).toBe(schemeTableau10[8]);
+  it('returns valid HSL string for {name, count} tag', () => {
+    const color = genreColor([{ name: 'rock', count: 10 }]);
+    expect(color).toMatch(/^hsl\(\d+, 70%, 65%\)$/);
   });
 
-  it('all 10 genre families map to distinct schemeTableau10 colors', () => {
-    const colors = GENRE_FAMILIES.map(family => genreColor([family]));
-    const uniqueColors = new Set(colors);
-    expect(uniqueColors.size).toBe(GENRE_FAMILIES.length);
+  it('is deterministic — same tag always returns same color', () => {
+    const a = genreColor([{ name: 'rock', count: 10 }]);
+    const b = genreColor([{ name: 'rock', count: 10 }]);
+    expect(a).toBe(b);
+  });
+
+  it('different tags return different hues', () => {
+    const rock = genreColor([{ name: 'rock', count: 10 }]);
+    const jazz = genreColor([{ name: 'jazz', count: 5 }]);
+    expect(rock).not.toBe(jazz);
+  });
+
+  it('accepts string[] input (Spotify genre shape)', () => {
+    const color = genreColor(['electronic']);
+    expect(color).toMatch(/^hsl\(\d+, 70%, 65%\)$/);
+  });
+
+  it('is case-insensitive', () => {
+    const upper = genreColor([{ name: 'Rock', count: 10 }]);
+    const lower = genreColor([{ name: 'rock', count: 10 }]);
+    expect(upper).toBe(lower);
+  });
+
+  it('exports NO_GENRE_COLOR as #4a4a4a', () => {
+    expect(NO_GENRE_COLOR).toBe('#4a4a4a');
   });
 });
