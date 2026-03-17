@@ -78,11 +78,12 @@ Plans:
   3. User can export the current graph as JSON (re-importable) or GEXF (opens in Gephi), and the "Reset graph" button clears everything back to the search state
   4. The current graph state (seed artist, depth, provider config) is encoded in the URL so copying and sharing the URL reproduces the same graph; keyboard navigation (Tab/arrows through nodes, Enter to expand, Escape to deselect, "/" to focus search) works throughout
   5. Viewer graph component is importable into a Next.js app via `next/dynamic` with `{ ssr: false }` and individual viewer components are exportable for composition in external projects
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Control panel, provider status dashboard, and layout toggle
-- [ ] 04-02: Export, URL sharing, keyboard navigation, and Next.js packaging
+- [ ] 04-01-PLAN.md — State layer, utility functions (filtering, export, URL, keyboard nav), and unit tests
+- [ ] 04-02-PLAN.md — ControlPanel sidebar, ShortcutOverlay, GraphCanvas extensions (filtering, radial layout, keyboard nav), and visual verification
+- [ ] 04-03-PLAN.md — Barrel exports, Vite library build, Next.js packaging, and SSR safety audit
 
 ## Progress
 
@@ -94,4 +95,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Engine Foundation | 2/2 | Complete   | 2026-03-16 |
 | 2. Multi-Provider Data Pipeline | 2/2 | Complete   | 2026-03-16 |
 | 3. Interactive Viewer | 5/5 | Complete   | 2026-03-16 |
-| 4. Controls, Export, and Polish | 0/2 | Not started | - |
+| 4. Controls, Export, and Polish | 0/3 | Not started | - |
