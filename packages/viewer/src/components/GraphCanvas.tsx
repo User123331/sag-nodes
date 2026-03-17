@@ -498,15 +498,6 @@ export function GraphCanvas() {
       ctx.stroke();
     }
 
-    // Neighbor highlight ring: subtle white ring for connected nodes when selection is active
-    if (isNeighbor) {
-      ctx.beginPath();
-      ctx.arc(x, y, radius + 3, 0, 2 * Math.PI);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-
     // Focus ring: keyboard navigation focus indicator
     if (node.mbid === focusedNodeMbidRef.current) {
       ctx.beginPath();
