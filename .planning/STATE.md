@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-17T18:58:50.404Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-17T19:02:38.217Z"
 last_activity: 2026-03-16 -- Plan 03-02 complete (SearchBar + GraphCanvas + App layout)
 progress:
   total_phases: 7
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 16
-  completed_plans: 15
+  completed_plans: 16
   percent: 85
 ---
 
@@ -67,6 +67,7 @@ Progress: [████████░░] 85%
 | Phase 05-fix-integration-wiring P05-01 | 2 | 2 tasks | 5 files |
 | Phase 05-fix-integration-wiring P05-02 | 2 | 2 tasks | 2 files |
 | Phase 06-genre-coloring-pipeline P01 | 5 | 2 tasks | 3 files |
+| Phase 06-genre-coloring-pipeline P02 | 4 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,8 @@ Recent decisions affecting current work:
 - [Phase 05-fix-integration-wiring]: 30s DEFAULT_COOLDOWN_MS hardcoded — retryAfterMs not available in warnings (error is kind string, not ProviderError object)
 - [Phase 05-fix-integration-wiring]: Edge selectionBoost=1.5x multiplier applied to lineWidth — reuses connectedToSelected variable for both opacity dimming and width boost
 - [Phase 06-genre-coloring-pipeline]: enrichTagsForNodes is sequential (not parallel) — per-node getArtistDetails calls go through MB queue naturally
+- [Phase 06-genre-coloring-pipeline]: HSL hash (djb2 variant) chosen over Tableau10 family mapping for genreColor — deterministic per tag name, infinite color space, no category maintenance
+- [Phase 06-genre-coloring-pipeline]: ctx.save/restore wraps genre ring shadow in GraphCanvas to prevent shadow leak to adjacent node draws
 
 ### Pending Todos
 
@@ -126,6 +129,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T18:58:50.402Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-03-17T19:02:38.214Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None

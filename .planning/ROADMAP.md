@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Interactive Viewer** - Force-directed graph rendering, artist search, detail panel, click-to-expand, and dark-first UI (completed 2026-03-16)
 - [x] **Phase 4: Controls, Export, and Polish** - Control panel, provider status dashboard, graph export, URL sharing, keyboard nav, and Next.js packaging (completed 2026-03-17)
 - [x] **Phase 5: Fix Integration Wiring** - URL restore fix (SHAR-01), rate-limit cooldown dispatch (STAT-02), edge thickness by similarity (VIS-04) (completed 2026-03-17)
-- [ ] **Phase 6: Genre Coloring Pipeline** - Tags in ArtistNode, provider genre population, genre-based node coloring (VIS-03)
+- [x] **Phase 6: Genre Coloring Pipeline** - Tags in ArtistNode, provider genre population, genre-based node coloring (VIS-03) (completed 2026-03-17)
 - [ ] **Phase 7: Visual Polish & Animations** - Entry bloom animations, ambient particle drift on edges, expansion ripple effect, cluster gravity layout mode
 
 ## Phase Details
@@ -142,5 +142,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Interactive Viewer | 5/5 | Complete   | 2026-03-16 |
 | 4. Controls, Export, and Polish | 3/3 | Complete   | 2026-03-17 |
 | 5. Fix Integration Wiring | 2/2 | Complete   | 2026-03-17 |
-| 6. Genre Coloring Pipeline | 1/2 | In Progress|  |
+| 6. Genre Coloring Pipeline | 2/2 | Complete   | 2026-03-17 |
 | 7. Visual Polish & Animations | 0/0 | Pending | — |
