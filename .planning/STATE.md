@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-controls-export-and-polish/04-01-PLAN.md
-last_updated: "2026-03-17T02:17:38.050Z"
+stopped_at: "Completed 04-controls-export-and-polish/04-02-PLAN.md (checkpoint:human-verify pending)"
+last_updated: "2026-03-17T02:25:30.950Z"
 last_activity: 2026-03-16 -- Plan 03-02 complete (SearchBar + GraphCanvas + App layout)
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
   percent: 85
 ---
 
@@ -61,6 +61,7 @@ Progress: [████████░░] 85%
 | Phase 03-interactive-viewer P04 | 11 | 2 tasks | 6 files |
 | Phase 03-interactive-viewer P05 | 15 | 2 tasks | 3 files |
 | Phase 04-controls-export-and-polish P04-01 | 10 | 2 tasks | 15 files |
+| Phase 04-controls-export-and-polish P04-02 | 5 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,8 @@ Recent decisions affecting current work:
 - [Phase 04-controls-export-and-polish]: depthFromSeed defaults to 0 in toForceNode; graphSlice overrides contextually (setGraph: seed=0, others=1; addExpansion: expandingNode.depthFromSeed+1)
 - [Phase 04-controls-export-and-polish]: engine.explore() takes only artistName (1 arg) — useUrlState cannot pass maxDepth as config; depth is restored only to controlSlice for client-side filtering
 - [Phase 04-controls-export-and-polish]: filterByProviders recalculates fusedScore as average of enabled provider rawScores only
+- [Phase 04-controls-export-and-polish]: ControlPanel hidden (display:none) when seedMbid is null — sidebar only appears once a graph is loaded
+- [Phase 04-controls-export-and-polish]: Filter chain (providers->depth->nodeLimit) in useMemo passes new array to graphData; ForceGraph2D rerenders with filtered node set
 
 ### Pending Todos
 
@@ -112,6 +115,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T02:17:38.047Z
-Stopped at: Completed 04-controls-export-and-polish/04-01-PLAN.md
+Last session: 2026-03-17T02:25:30.947Z
+Stopped at: Completed 04-controls-export-and-polish/04-02-PLAN.md (checkpoint:human-verify pending)
 Resume file: None

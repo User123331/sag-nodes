@@ -86,7 +86,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **STAT-01**: Status indicator per provider (active, rate-limited, erroring)
 - [x] **STAT-02**: Rate limit remaining display per provider
-- [ ] **STAT-03**: Visual feedback during multi-provider fetching
+- [x] **STAT-03**: Visual feedback during multi-provider fetching
 
 ### Export
 
@@ -200,7 +200,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CTRL-06 | Phase 4 | Complete |
 | STAT-01 | Phase 4 | Complete |
 | STAT-02 | Phase 4 | Complete |
-| STAT-03 | Phase 4 | Pending |
+| STAT-03 | Phase 4 | Complete |
 | EXPT-01 | Phase 4 | Complete |
 | EXPT-02 | Phase 4 | Complete |
 | SHAR-01 | Phase 4 | Complete |
