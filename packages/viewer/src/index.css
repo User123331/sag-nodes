@@ -11,6 +11,11 @@
   --color-skeleton-shine: #2a2a2a;
   --color-toast-bg: #1f1f1f;
   --color-toast-border: #3a3a3a;
+  --color-status-active: #22c55e;
+  --color-status-warning: #eab308;
+  --color-status-error: #ef4444;
+  --color-status-disabled: #4a4a4a;
+  --color-focus-ring: rgba(59, 130, 246, 0.5);
 
   font-family: ui-monospace, 'Cascadia Code', Menlo, 'Courier New', monospace;
   color: var(--color-text-primary);

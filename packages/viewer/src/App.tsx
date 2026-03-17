@@ -4,6 +4,9 @@ import { useGraphStore } from './store/index.js';
 import { SearchBar } from './components/SearchBar.js';
 import { GraphCanvas } from './components/GraphCanvas.js';
 import { DetailPanel } from './components/DetailPanel.js';
+import { ControlPanel } from './components/ControlPanel.js';
+import { ShortcutOverlay } from './components/ShortcutOverlay.js';
+import { useUrlState } from './hooks/useUrlState.js';
 import './App.css';
 
 export function App() {
@@ -13,11 +16,15 @@ export function App() {
     initEngine();
   }, [initEngine]);
 
+  useUrlState();
+
   return (
     <div className="app">
+      <ControlPanel />
       <GraphCanvas />
       <SearchBar />
       <DetailPanel />
+      <ShortcutOverlay />
       <Toaster
         position="bottom-center"
         toastOptions={{

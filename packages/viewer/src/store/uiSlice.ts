@@ -8,11 +8,15 @@ export interface UiSlice {
   expansionStartTime: number | null;
   reheatCounter: number;
   warnings: Array<{ provider: string; error: string }>;
+  focusedNodeMbid: string | null;
+  isShortcutOverlayOpen: boolean;
   selectNode: (node: ForceNode | null) => void;
   setExpandingMbid: (mbid: string | null) => void;
   triggerReheat: () => void;
   addWarnings: (warnings: Array<{ provider: string; error: string }>) => void;
   clearWarnings: () => void;
+  setFocusedNode: (mbid: string | null) => void;
+  toggleShortcutOverlay: () => void;
 }
 
 export const createUiSlice: StateCreator<UiSlice> = (set) => ({
@@ -22,6 +26,8 @@ export const createUiSlice: StateCreator<UiSlice> = (set) => ({
   expansionStartTime: null,
   reheatCounter: 0,
   warnings: [],
+  focusedNodeMbid: null,
+  isShortcutOverlayOpen: false,
   selectNode: (node) => set({
     selectedNode: node,
     isPanelOpen: node !== null,
@@ -35,4 +41,6 @@ export const createUiSlice: StateCreator<UiSlice> = (set) => ({
     warnings: [...state.warnings, ...warnings],
   })),
   clearWarnings: () => set({ warnings: [] }),
+  setFocusedNode: (mbid) => set({ focusedNodeMbid: mbid }),
+  toggleShortcutOverlay: () => set((state) => ({ isShortcutOverlayOpen: !state.isShortcutOverlayOpen })),
 });
