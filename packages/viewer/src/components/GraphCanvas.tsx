@@ -1,13 +1,16 @@
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import type { ForceGraphMethods } from 'react-force-graph-2d';
-import { forceCollide } from 'd3-force';
+import { forceCollide, forceManyBody, forceRadial } from 'd3-force';
 import { useShallow } from 'zustand/react/shallow';
 import { toast } from 'sonner';
 import { useGraphStore } from '../store/index.js';
 import type { ForceNode, ForceLink } from '../types/graph.js';
 import { genreColor, NO_GENRE_COLOR } from '../utils/genreCluster.js';
 import { nodeRadius } from '../utils/nodeSize.js';
+import { filterByDepth, filterByProviders, filterByNodeLimit } from '../utils/providerFilter.js';
+import { findNearestInDirection } from '../utils/keyboardNav.js';
+import type { ProviderId } from '@similar-artists-graph/engine';
 import './GraphCanvas.css';
 
 const LABEL_ZOOM_THRESHOLD = 2.5;
@@ -39,6 +42,25 @@ export function GraphCanvas() {
     }))
   );
 
+  // Control state
+  const { maxDepth, nodeLimit, enabledProviders, layoutMode, isSidebarExpanded } = useGraphStore(
+    useShallow(s => ({
+      maxDepth: s.maxDepth,
+      nodeLimit: s.nodeLimit,
+      enabledProviders: s.enabledProviders,
+      layoutMode: s.layoutMode,
+      isSidebarExpanded: s.isSidebarExpanded,
+    }))
+  );
+
+  // Keyboard/UI state from uiSlice
+  const { focusedNodeMbid, isShortcutOverlayOpen } = useGraphStore(
+    useShallow(s => ({
+      focusedNodeMbid: s.focusedNodeMbid,
+      isShortcutOverlayOpen: s.isShortcutOverlayOpen,
+    }))
+  );
+
   // Engine state
   const { engine, isExploring, isExpanding } = useGraphStore(
     useShallow(s => ({
@@ -54,6 +76,10 @@ export function GraphCanvas() {
   const addExpansion = useGraphStore(s => s.addExpansion);
   const setIsExpanding = useGraphStore(s => s.setIsExpanding);
   const triggerReheat = useGraphStore(s => s.triggerReheat);
+  const setFocusedNode = useGraphStore(s => s.setFocusedNode);
+  const toggleShortcutOverlay = useGraphStore(s => s.toggleShortcutOverlay);
+  const setProviderStatus = useGraphStore(s => s.setProviderStatus);
+  const setProviderFetching = useGraphStore(s => s.setProviderFetching);
 
   // Refs to avoid stale closures in canvas callbacks
   const seedMbidRef = useRef(seedMbid);
@@ -61,12 +87,20 @@ export function GraphCanvas() {
   const expandingMbidRef = useRef(expandingMbid);
   const expansionStartTimeRef = useRef(expansionStartTime);
   const nodesRef = useRef(nodes);
+  const linksRef = useRef(links);
+  const focusedNodeMbidRef = useRef(focusedNodeMbid);
+  const isShortcutOverlayOpenRef = useRef(isShortcutOverlayOpen);
+  const enabledProvidersRef = useRef(enabledProviders);
 
   useEffect(() => { seedMbidRef.current = seedMbid; }, [seedMbid]);
   useEffect(() => { selectedNodeRef.current = selectedNode; }, [selectedNode]);
   useEffect(() => { expandingMbidRef.current = expandingMbid; }, [expandingMbid]);
   useEffect(() => { expansionStartTimeRef.current = expansionStartTime; }, [expansionStartTime]);
   useEffect(() => { nodesRef.current = nodes; }, [nodes]);
+  useEffect(() => { linksRef.current = links; }, [links]);
+  useEffect(() => { focusedNodeMbidRef.current = focusedNodeMbid; }, [focusedNodeMbid]);
+  useEffect(() => { isShortcutOverlayOpenRef.current = isShortcutOverlayOpen; }, [isShortcutOverlayOpen]);
+  useEffect(() => { enabledProvidersRef.current = enabledProviders; }, [enabledProviders]);
 
   // Watch reheatCounter — when DetailPanel triggers reheat, fire d3ReheatSimulation and unpin after 1500ms
   useEffect(() => {
@@ -81,27 +115,72 @@ export function GraphCanvas() {
     return () => clearTimeout(timer);
   }, [reheatCounter]);
 
-  // Canvas dimensions
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  // Canvas dimensions — SSR-safe
+  const [windowWidth, setWindowWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [windowHeight, setWindowHeight] = useState(() => typeof window !== 'undefined' ? window.innerHeight : 800);
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight);
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const canvasWidth = windowWidth - (isPanelOpen ? 320 : 0);
+  // Canvas width accounts for left sidebar (only when graph exists) and right detail panel
+  const leftSidebarWidth = seedMbid !== null ? (isSidebarExpanded ? 220 : 40) : 0;
+  const canvasWidth = windowWidth - leftSidebarWidth - (isPanelOpen ? 320 : 0);
 
-  // Graph data memoized
-  const graphData = useMemo(() => ({ nodes, links }), [nodes, links]);
+  // Apply client-side filtering in order: providers -> depth -> nodeLimit
+  const filteredGraphData = useMemo(() => {
+    if (nodes.length === 0) return { nodes, links };
+
+    let filtered = filterByProviders(nodes, links, enabledProviders);
+    filtered = filterByDepth(filtered.nodes, filtered.links, maxDepth);
+    if (seedMbid !== null) {
+      filtered = filterByNodeLimit(filtered.nodes, filtered.links, seedMbid, nodeLimit);
+    }
+    return filtered;
+  }, [nodes, links, enabledProviders, maxDepth, nodeLimit, seedMbid]);
+
+  // Store visible node mbids in a ref for renderNode/renderLink
+  const visibleMbidsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    visibleMbidsRef.current = new Set(filteredGraphData.nodes.map(n => n.mbid));
+  }, [filteredGraphData]);
+
+  // Graph data for ForceGraph2D
+  const graphData = useMemo(() => ({
+    nodes: filteredGraphData.nodes,
+    links: filteredGraphData.links,
+  }), [filteredGraphData]);
 
   // Configure collide force after mount
   useEffect(() => {
     if (graphRef.current) {
-      // Cast the forceFn to match expected signature
       const collideFn = forceCollide((node: ForceNode) => nodeRadius(node.metadata?.nb_fan) + 2) as unknown as (alpha: number) => void;
       graphRef.current.d3Force('collide', collideFn as Parameters<typeof graphRef.current.d3Force>[1]);
     }
   });
+
+  // Radial layout toggle
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph) return;
+    if (layoutMode === 'radial') {
+      const radialFn = forceRadial<ForceNode>(
+        (node) => (node.depthFromSeed ?? 0) * 120,
+        0, 0
+      ).strength(0.8);
+      graph.d3Force('radial', radialFn as unknown as Parameters<typeof graph.d3Force>[1]);
+      graph.d3Force('charge', null);
+      graph.d3ReheatSimulation();
+    } else {
+      graph.d3Force('radial', null);
+      graph.d3Force('charge', forceManyBody().strength(-80) as unknown as Parameters<typeof graph.d3Force>[1]);
+      graph.d3ReheatSimulation();
+    }
+  }, [layoutMode]);
 
   // Click timer for double-click detection
   const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -113,20 +192,24 @@ export function GraphCanvas() {
     setExpandingMbid(node.mbid);
     setIsExpanding(true);
 
+    // Set all enabled providers to fetching
+    enabledProvidersRef.current.forEach((id: ProviderId) => {
+      setProviderFetching(id, true);
+    });
+
     try {
       const result = await engine.expand(node.mbid);
       if (result.ok) {
         addExpansion(result.value, node);
-        // triggerReheat increments reheatCounter, which the useEffect above watches
-        // to call d3ReheatSimulation and unpin nodes after 1500ms
         triggerReheat();
 
         if (result.value.truncated) {
-          toast(`Node limit reached (${nodes.length}/150). Graph is at maximum size.`, { duration: 5000 });
+          toast(`Node limit reached (${nodesRef.current.length}/150). Graph is at maximum size.`, { duration: 5000 });
         }
         if (result.value.warnings.length > 0) {
           result.value.warnings.forEach(w => {
             toast.error(`${w.provider}: ${w.error}`, { duration: 4000 });
+            setProviderStatus(w.provider as ProviderId, 'erroring');
           });
         }
       } else {
@@ -137,8 +220,12 @@ export function GraphCanvas() {
     } finally {
       setExpandingMbid(null);
       setIsExpanding(false);
+      // Clear fetching state for all enabled providers
+      enabledProvidersRef.current.forEach((id: ProviderId) => {
+        setProviderFetching(id, false);
+      });
     }
-  }, [engine, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat, nodes.length]);
+  }, [engine, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat, setProviderStatus, setProviderFetching]);
 
   const handleNodeClick = useCallback((node: ForceNode) => {
     if (lastClickedRef.current === node.mbid && clickTimerRef.current !== null) {
@@ -161,6 +248,87 @@ export function GraphCanvas() {
   const handleBackgroundClick = useCallback(() => {
     selectNode(null);
   }, [selectNode]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept when typing in inputs
+      const tag = (document.activeElement as HTMLElement | null)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+      const currentNodes = nodesRef.current;
+
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        if (currentNodes.length === 0) return;
+
+        // Sort by fusedScore of direct edge to seed (highest first)
+        const seed = seedMbidRef.current;
+        const scoreMap = new Map<string, number>();
+        linksRef.current.forEach(l => {
+          if (l.sourceMbid === seed) scoreMap.set(l.targetMbid, l.fusedScore);
+          else if (l.targetMbid === seed) scoreMap.set(l.sourceMbid, l.fusedScore);
+        });
+        const sorted = [...currentNodes].sort((a, b) => (scoreMap.get(b.mbid) ?? 0) - (scoreMap.get(a.mbid) ?? 0));
+
+        const currentMbid = focusedNodeMbidRef.current;
+        const currentIdx = currentMbid !== null ? sorted.findIndex(n => n.mbid === currentMbid) : -1;
+        const nextIdx = e.shiftKey
+          ? (currentIdx <= 0 ? sorted.length - 1 : currentIdx - 1)
+          : (currentIdx >= sorted.length - 1 ? 0 : currentIdx + 1);
+        const nextNode = sorted[nextIdx];
+        if (nextNode) setFocusedNode(nextNode.mbid);
+
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const currentMbid = focusedNodeMbidRef.current;
+        const focusedNode = currentMbid !== null ? currentNodes.find(n => n.mbid === currentMbid) ?? null : null;
+        if (!focusedNode) {
+          // Focus the first node
+          if (currentNodes.length > 0) {
+            const first = currentNodes[0];
+            if (first) setFocusedNode(first.mbid);
+          }
+          return;
+        }
+        const nearest = findNearestInDirection(
+          focusedNode,
+          currentNodes,
+          e.key as 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight'
+        );
+        if (nearest) setFocusedNode(nearest.mbid);
+
+      } else if (e.key === 'Enter') {
+        const currentMbid = focusedNodeMbidRef.current;
+        const focusedNode = currentMbid !== null ? currentNodes.find(n => n.mbid === currentMbid) ?? null : null;
+        if (focusedNode) void handleExpand(focusedNode);
+
+      } else if (e.key === 'Escape') {
+        selectNode(null);
+        setFocusedNode(null);
+        if (isShortcutOverlayOpenRef.current) toggleShortcutOverlay();
+
+      } else if (e.key === '/') {
+        e.preventDefault();
+        document.querySelector<HTMLInputElement>('.search-input')?.focus();
+
+      } else if (e.key === '?') {
+        toggleShortcutOverlay();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setFocusedNode, handleExpand, selectNode, toggleShortcutOverlay]);
+
+  // Auto-pan on focus change
+  useEffect(() => {
+    if (focusedNodeMbid === null) return;
+    const node = nodesRef.current.find(n => n.mbid === focusedNodeMbid);
+    if (node && node.x !== undefined && node.y !== undefined) {
+      graphRef.current?.centerAt(node.x, node.y, 300);
+    }
+  }, [focusedNodeMbid]);
 
   // Node canvas renderer
   const renderNode = useCallback((
@@ -218,13 +386,22 @@ export function GraphCanvas() {
       ctx.stroke();
     }
 
+    // Focus ring: keyboard navigation focus indicator
+    if (node.mbid === focusedNodeMbidRef.current) {
+      ctx.beginPath();
+      ctx.arc(x, y, radius + 4, 0, 2 * Math.PI);
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
     // Reset alpha
     ctx.globalAlpha = 1.0;
 
     // Zoom-adaptive labels
     const showLabel = globalScale >= LABEL_ZOOM_THRESHOLD || isSeed;
     if (showLabel) {
-      const fontSize = Math.max(8, 12 / globalScale);
+      const fontSize = Math.max(6, 8 / globalScale);
       ctx.font = `${fontSize}px ui-monospace, monospace`;
       ctx.fillStyle = '#ffffff';
       ctx.textAlign = 'center';
@@ -300,7 +477,7 @@ export function GraphCanvas() {
           d3AlphaDecay={0.02}
           d3VelocityDecay={0.3}
           width={canvasWidth}
-          height={window.innerHeight}
+          height={windowHeight}
           backgroundColor="#0a0a0a"
         />
       )}
