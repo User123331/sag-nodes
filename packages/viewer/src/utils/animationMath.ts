@@ -18,5 +18,5 @@ export const BLOOM_DURATION_MS = 400;
 export const EDGE_GROW_DURATION_MS = 400;
 export const RIPPLE_DURATION_MS = 600;
 export const RIPPLE_MAX_RADIUS = 80;
-export const PARTICLE_RADIUS = 0.4;
+export const PARTICLE_RADIUS = 0.25;
 export const PARTICLE_SKIP_SCALE = 0.15;

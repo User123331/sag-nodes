@@ -96,12 +96,28 @@ export function GraphCanvas() {
   const enabledProvidersRef = useRef(enabledProviders);
   const cooldownTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
+  // Neighbor mbids ref: set of mbids connected to the currently selected node
+  const neighborMbidsRef = useRef<Set<string>>(new Set());
+
   // Ripple animation refs
   const rippleNodeMbidRef = useRef<string | null>(null);
   const rippleStartTimeRef = useRef<number | null>(null);
 
   useEffect(() => { seedMbidRef.current = seedMbid; }, [seedMbid]);
   useEffect(() => { selectedNodeRef.current = selectedNode; }, [selectedNode]);
+  useEffect(() => {
+    if (selectedNode === null) {
+      neighborMbidsRef.current = new Set();
+      return;
+    }
+    const mbid = selectedNode.mbid;
+    const neighbors = new Set<string>();
+    linksRef.current.forEach(l => {
+      if (l.sourceMbid === mbid) neighbors.add(l.targetMbid);
+      else if (l.targetMbid === mbid) neighbors.add(l.sourceMbid);
+    });
+    neighborMbidsRef.current = neighbors;
+  }, [selectedNode, links]);
   useEffect(() => { expandingMbidRef.current = expandingMbid; }, [expandingMbid]);
   useEffect(() => { expansionStartTimeRef.current = expansionStartTime; }, [expansionStartTime]);
   useEffect(() => { nodesRef.current = nodes; }, [nodes]);
@@ -417,10 +433,13 @@ export function GraphCanvas() {
     const isSeed = seedMbidRef.current === node.mbid;
     const isExpandingNode = expandingMbidRef.current === node.mbid;
     const hasSelection = selectedNodeRef.current !== null;
+    const isNeighbor = !isSelected && neighborMbidsRef.current.has(node.mbid);
 
-    // Dimming: non-selected nodes at 30% opacity when something is selected
-    if (hasSelection && !isSelected) {
+    // Dimming: non-selected nodes at 30% opacity; neighbors at 70% (less dimmed)
+    if (hasSelection && !isSelected && !isNeighbor) {
       ctx.globalAlpha = 0.3;
+    } else if (hasSelection && isNeighbor) {
+      ctx.globalAlpha = 0.7;
     } else {
       ctx.globalAlpha = 1.0;
     }
@@ -479,6 +498,15 @@ export function GraphCanvas() {
       ctx.stroke();
     }
 
+    // Neighbor highlight ring: subtle white ring for connected nodes when selection is active
+    if (isNeighbor) {
+      ctx.beginPath();
+      ctx.arc(x, y, radius + 3, 0, 2 * Math.PI);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
     // Focus ring: keyboard navigation focus indicator
     if (node.mbid === focusedNodeMbidRef.current) {
       ctx.beginPath();
@@ -512,7 +540,7 @@ export function GraphCanvas() {
       ctx.fillStyle = '#f5f5f5';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
-      ctx.globalAlpha = hasSelection && !isSelected ? 0.3 : 1.0;
+      ctx.globalAlpha = hasSelection && isNeighbor ? 0.7 : hasSelection && !isSelected ? 0.3 : 1.0;
       // Text shadow for readability: draw text in black offset, then white on top
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = 2 / globalScale;
@@ -578,7 +606,7 @@ export function GraphCanvas() {
     if (selected !== null && !connectedToSelected) return;
 
     const count = link.fusedScore > 0.6 ? 3 : link.fusedScore > 0.3 ? 2 : 1;
-    const cycleDuration = 4000 - (link.fusedScore * 2500); // 1500ms fast to 4000ms slow
+    const cycleDuration = 2500; // uniform speed for all particles
     const now = Date.now();
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
