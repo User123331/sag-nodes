@@ -97,8 +97,11 @@ Plans:
   1. Copying a graph URL and pasting it in a new tab restores the same seed artist and graph state
   2. When a provider hits a rate limit, the ControlPanel shows a countdown timer until the cooldown expires
   3. Edges between highly similar artists are visibly thicker than edges between weakly similar artists
+**Plans**: 2 plans
 
-Plans: TBD
+Plans:
+- [ ] 05-01-PLAN.md — Engine exploreByMbid method and useUrlState restore fix (SHAR-01)
+- [ ] 05-02-PLAN.md — Rate-limit cooldown dispatch and edge thickness scaling (STAT-02, VIS-04)
 
 ### Phase 6: Genre Coloring Pipeline
 **Goal**: Nodes are colored by genre cluster using real tag data from providers, replacing the current monochrome fallback
@@ -135,6 +138,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 2. Multi-Provider Data Pipeline | 2/2 | Complete   | 2026-03-16 |
 | 3. Interactive Viewer | 5/5 | Complete   | 2026-03-16 |
 | 4. Controls, Export, and Polish | 3/3 | Complete   | 2026-03-17 |
-| 5. Fix Integration Wiring | 0/0 | Pending | — |
+| 5. Fix Integration Wiring | 0/2 | Pending | — |
 | 6. Genre Coloring Pipeline | 0/0 | Pending | — |
 | 7. Visual Polish & Animations | 0/0 | Pending | — |
