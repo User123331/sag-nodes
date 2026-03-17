@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-17T09:43:24.187Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-17T09:48:00.587Z"
 last_activity: 2026-03-16 -- Plan 03-02 complete (SearchBar + GraphCanvas + App layout)
 progress:
   total_phases: 7
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 14
-  completed_plans: 13
+  completed_plans: 14
   percent: 85
 ---
 
@@ -65,6 +65,7 @@ Progress: [████████░░] 85%
 | Phase 04-controls-export-and-polish P04-02 | 10 | 3 tasks | 8 files |
 | Phase 04-controls-export-and-polish P04-03 | 4 | 1 tasks | 3 files |
 | Phase 05-fix-integration-wiring P05-01 | 2 | 2 tasks | 5 files |
+| Phase 05-fix-integration-wiring P05-02 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,8 @@ Recent decisions affecting current work:
 - [Phase 04-controls-export-and-polish]: Viewer barrel export uses .js extension for ESM; all peer deps externalized in vite.lib.config.ts rollupOptions
 - [Phase 05-fix-integration-wiring]: exploreByMbid resolves MBID by calling getArtistDetails(mbid) directly — no Lucene text search, no name disambiguation needed
 - [Phase 05-fix-integration-wiring]: EntityResolver.mbProvider changed from private to readonly to enable EngineImpl direct access for exploreByMbid
+- [Phase 05-fix-integration-wiring]: 30s DEFAULT_COOLDOWN_MS hardcoded — retryAfterMs not available in warnings (error is kind string, not ProviderError object)
+- [Phase 05-fix-integration-wiring]: Edge selectionBoost=1.5x multiplier applied to lineWidth — reuses connectedToSelected variable for both opacity dimming and width boost
 
 ### Pending Todos
 
@@ -121,6 +124,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T09:43:24.185Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-17T09:48:00.584Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

@@ -52,7 +52,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **VIS-01**: Force-directed graph rendering via react-force-graph-2d with Canvas/WebGL
 - [x] **VIS-02**: Node sizing by popularity/prominence metric
 - [ ] **VIS-03**: Node coloring by genre cluster (d3-scale-chromatic palette)
-- [ ] **VIS-04**: Edge thickness/opacity by similarity strength
+- [x] **VIS-04**: Edge thickness/opacity by similarity strength
 - [x] **VIS-05**: Zoom, pan, drag interactions (mouse + trackpad)
 - [x] **VIS-06**: Click-to-expand — clicking a node fetches and renders its similar artists
 - [x] **VIS-07**: Expansion animation — new nodes bloom outward from clicked node
@@ -85,7 +85,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Provider Status
 
 - [x] **STAT-01**: Status indicator per provider (active, rate-limited, erroring)
-- [ ] **STAT-02**: Rate limit remaining display per provider
+- [x] **STAT-02**: Rate limit remaining display per provider
 - [x] **STAT-03**: Visual feedback during multi-provider fetching
 
 ### Export
@@ -174,7 +174,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIS-01 | Phase 3 | Complete |
 | VIS-02 | Phase 3 | Complete |
 | VIS-03 | Phase 6 | Pending |
-| VIS-04 | Phase 5 | Pending |
+| VIS-04 | Phase 5 | Complete |
 | VIS-05 | Phase 3 | Complete |
 | VIS-06 | Phase 3 | Complete |
 | VIS-07 | Phase 3 | Complete |
@@ -199,7 +199,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CTRL-05 | Phase 4 | Complete |
 | CTRL-06 | Phase 4 | Complete |
 | STAT-01 | Phase 4 | Complete |
-| STAT-02 | Phase 5 | Pending |
+| STAT-02 | Phase 5 | Complete |
 | STAT-03 | Phase 4 | Complete |
 | EXPT-01 | Phase 4 | Complete |
 | EXPT-02 | Phase 4 | Complete |
