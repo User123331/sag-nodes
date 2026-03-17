@@ -292,6 +292,12 @@ export function ControlPanel() {
               >
                 Radial
               </button>
+              <button
+                className={`layout-toggle-btn${layoutMode === 'cluster' ? ' layout-toggle-btn--active' : ''}`}
+                onClick={() => setLayoutMode('cluster')}
+              >
+                Cluster
+              </button>
             </div>
           </div>
 
