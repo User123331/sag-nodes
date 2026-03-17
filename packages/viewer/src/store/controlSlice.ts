@@ -62,6 +62,7 @@ export const createControlSlice: StateCreator<ControlSlice> = (set) => ({
 
   resetControls: () => set({
     enabledProviders: new Set(ALL_PROVIDERS),
+    providerCooldownEndsAt: {},
     maxDepth: 3,
     nodeLimit: 150,
     layoutMode: 'force',

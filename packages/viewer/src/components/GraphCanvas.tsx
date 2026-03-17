@@ -80,6 +80,7 @@ export function GraphCanvas() {
   const toggleShortcutOverlay = useGraphStore(s => s.toggleShortcutOverlay);
   const setProviderStatus = useGraphStore(s => s.setProviderStatus);
   const setProviderFetching = useGraphStore(s => s.setProviderFetching);
+  const setProviderCooldown = useGraphStore(s => s.setProviderCooldown);
 
   // Refs to avoid stale closures in canvas callbacks
   const seedMbidRef = useRef(seedMbid);
@@ -91,6 +92,7 @@ export function GraphCanvas() {
   const focusedNodeMbidRef = useRef(focusedNodeMbid);
   const isShortcutOverlayOpenRef = useRef(isShortcutOverlayOpen);
   const enabledProvidersRef = useRef(enabledProviders);
+  const cooldownTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   useEffect(() => { seedMbidRef.current = seedMbid; }, [seedMbid]);
   useEffect(() => { selectedNodeRef.current = selectedNode; }, [selectedNode]);
@@ -101,6 +103,13 @@ export function GraphCanvas() {
   useEffect(() => { focusedNodeMbidRef.current = focusedNodeMbid; }, [focusedNodeMbid]);
   useEffect(() => { isShortcutOverlayOpenRef.current = isShortcutOverlayOpen; }, [isShortcutOverlayOpen]);
   useEffect(() => { enabledProvidersRef.current = enabledProviders; }, [enabledProviders]);
+
+  // Cleanup cooldown timers on unmount
+  useEffect(() => {
+    return () => {
+      cooldownTimersRef.current.forEach(clearTimeout);
+    };
+  }, []);
 
   // Watch reheatCounter — when DetailPanel triggers reheat, fire d3ReheatSimulation and unpin after 1500ms
   useEffect(() => {
@@ -207,9 +216,26 @@ export function GraphCanvas() {
           toast(`Node limit reached (${nodesRef.current.length}/150). Graph is at maximum size.`, { duration: 5000 });
         }
         if (result.value.warnings.length > 0) {
+          const DEFAULT_COOLDOWN_MS = 30_000;
           result.value.warnings.forEach(w => {
             toast.error(`${w.provider}: ${w.error}`, { duration: 4000 });
-            setProviderStatus(w.provider as ProviderId, 'erroring');
+            if (w.error === 'RateLimitError') {
+              const endsAt = Date.now() + DEFAULT_COOLDOWN_MS;
+              setProviderCooldown(w.provider as ProviderId, endsAt);
+              setProviderStatus(w.provider as ProviderId, 'rate-limited');
+              // Clear any existing timer for this provider
+              const existing = cooldownTimersRef.current.get(w.provider);
+              if (existing !== undefined) clearTimeout(existing);
+              // Auto-clear cooldown badge after delay
+              const timer = setTimeout(() => {
+                setProviderCooldown(w.provider as ProviderId, null);
+                setProviderStatus(w.provider as ProviderId, 'active');
+                cooldownTimersRef.current.delete(w.provider);
+              }, DEFAULT_COOLDOWN_MS);
+              cooldownTimersRef.current.set(w.provider, timer);
+            } else {
+              setProviderStatus(w.provider as ProviderId, 'erroring');
+            }
           });
         }
       } else {
@@ -225,7 +251,7 @@ export function GraphCanvas() {
         setProviderFetching(id, false);
       });
     }
-  }, [engine, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat, setProviderStatus, setProviderFetching]);
+  }, [engine, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat, setProviderStatus, setProviderFetching, setProviderCooldown]);
 
   const handleNodeClick = useCallback((node: ForceNode) => {
     if (lastClickedRef.current === node.mbid && clickTimerRef.current !== null) {
