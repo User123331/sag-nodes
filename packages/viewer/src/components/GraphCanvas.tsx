@@ -130,14 +130,6 @@ export function GraphCanvas() {
     return () => clearTimeout(timer);
   }, [reheatCounter]);
 
-  // Safety-net: periodically reheat the simulation so panning never freezes the animation loop
-  useEffect(() => {
-    const id = setInterval(() => {
-      graphRef.current?.d3ReheatSimulation();
-    }, 5000);
-    return () => clearInterval(id);
-  }, []);
-
   // Canvas dimensions — SSR-safe
   const [windowWidth, setWindowWidth] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1200);
   const [windowHeight, setWindowHeight] = useState(() => typeof window !== 'undefined' ? window.innerHeight : 800);
@@ -673,7 +665,8 @@ export function GraphCanvas() {
           enablePanInteraction={true}
           warmupTicks={50}
           cooldownTicks={Infinity}
-          d3AlphaDecay={0}
+          autoPauseRedraw={false}
+          d3AlphaDecay={0.0228}
           d3VelocityDecay={0.3}
           width={canvasWidth}
           height={windowHeight}
