@@ -16,7 +16,7 @@ export interface EntityResolverOptions {
 }
 
 export class EntityResolver {
-  private readonly mbProvider: MusicBrainzProvider;
+  readonly mbProvider: MusicBrainzProvider;
   private readonly cache: CacheStore;
   private readonly fetchFn: typeof fetch;
   private readonly fuzzyThreshold: number;

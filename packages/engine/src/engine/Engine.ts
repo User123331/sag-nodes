@@ -190,6 +190,25 @@ export class EngineImpl implements EngineInterface {
     });
   }
 
+  async exploreByMbid(mbid: string): Promise<Result<ExploreResult, ProviderError>> {
+    if (!UUID_REGEX.test(mbid)) {
+      return err({ kind: 'NotFoundError', provider: 'musicbrainz', query: mbid });
+    }
+
+    const detailsResult = await this.resolver.mbProvider.getArtistDetails(mbid);
+    if (!detailsResult.ok) {
+      return err({ kind: 'NotFoundError', provider: 'musicbrainz', query: mbid });
+    }
+
+    const { name, disambiguation } = detailsResult.value;
+    this.graphBuilder.reset();
+    this.graphBuilder.setSeed(mbid, name, disambiguation);
+
+    const warnings = await this.fetchAndMergeSimilar(mbid, name);
+    const graphData = this.graphBuilder.getGraphData();
+    return ok({ ...graphData, warnings });
+  }
+
   private async fetchAndMergeSimilar(
     seedMbid: string,
     seedName: string,

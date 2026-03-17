@@ -1,9 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createEngine } from '../../src/engine/Engine.js';
+import { createEngine, EngineImpl } from '../../src/engine/Engine.js';
 import { RequestQueue } from '../../src/queue/RequestQueue.js';
 import {
   MOCK_MB_SEARCH_RESPONSE,
   MOCK_MB_ARTIST_URL_RELS_RESPONSE,
+  MOCK_MB_ARTIST_DETAILS_RESPONSE,
   MOCK_LB_SIMILAR_RESPONSE,
   MOCK_LASTFM_SIMILAR_RESPONSE,
   MOCK_DEEZER_SEARCH_RESPONSE,
@@ -458,6 +459,103 @@ describe('Engine', () => {
       // Raw Deezer numeric IDs must NOT be in the graph
       expect(nodeMbids).not.toContain('99999999');
       expect(nodeMbids).not.toContain(99999999 as unknown as string);
+    });
+  });
+
+  describe('exploreByMbid', () => {
+    it('returns ok result with graph data for a valid UUID', async () => {
+      const mockFetch = createRoutedMockFetch([
+        // MusicBrainz artist details lookup (no name search — MBID directly)
+        {
+          pattern: 'musicbrainz.org/ws/2/artist/a74b1b7f',
+          response: { status: 200, body: MOCK_MB_ARTIST_DETAILS_RESPONSE },
+        },
+        // ListenBrainz similar artists
+        { pattern: 'listenbrainz.org', response: { status: 200, body: MOCK_LB_SIMILAR_RESPONSE } },
+        // Deezer search by name (fallback since no url-rels in details response)
+        { pattern: 'api.deezer.com/search/artist', response: { status: 200, body: MOCK_DEEZER_SEARCH_RESPONSE } },
+        // Deezer related artists
+        { pattern: 'api.deezer.com/artist/', response: { status: 200, body: MOCK_DEEZER_RELATED_RESPONSE } },
+        // MB URL lookup for Deezer ID resolution
+        { pattern: 'musicbrainz.org/ws/2/url', response: { status: 404, body: {} } },
+      ]);
+
+      const engine = createEngine({
+        fetchFn: mockFetch,
+        mbQueue: makeFastMbQueue(),
+      });
+
+      const result = await engine.exploreByMbid('a74b1b7f-71a5-4011-9441-d0b5e4122711');
+
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+
+      expect(result.value.seedMbid).toBe('a74b1b7f-71a5-4011-9441-d0b5e4122711');
+      expect(result.value.nodes.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('returns err with NotFoundError for non-UUID string', async () => {
+      const mockFetch = vi.fn() as unknown as typeof fetch;
+      const engine = createEngine({
+        fetchFn: mockFetch,
+        mbQueue: makeFastMbQueue(),
+      });
+
+      const result = await engine.exploreByMbid('not-a-uuid');
+
+      expect(result.ok).toBe(false);
+      if (result.ok) return;
+      expect(result.error.kind).toBe('NotFoundError');
+      // UUID guard should fire — no API calls made
+      expect((mockFetch as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
+    });
+
+    it('does NOT call resolveNameToMbids (no Lucene name search)', async () => {
+      const mockFetch = createRoutedMockFetch([
+        {
+          pattern: 'musicbrainz.org/ws/2/artist/a74b1b7f',
+          response: { status: 200, body: MOCK_MB_ARTIST_DETAILS_RESPONSE },
+        },
+        { pattern: 'listenbrainz.org', response: { status: 200, body: {} } },
+        { pattern: 'api.deezer.com/search/artist', response: { status: 200, body: MOCK_DEEZER_SEARCH_RESPONSE } },
+        { pattern: 'api.deezer.com/artist/', response: { status: 200, body: MOCK_DEEZER_RELATED_RESPONSE } },
+        { pattern: 'musicbrainz.org/ws/2/url', response: { status: 404, body: {} } },
+      ]);
+
+      const engine = createEngine({
+        fetchFn: mockFetch,
+        mbQueue: makeFastMbQueue(),
+      });
+
+      await engine.exploreByMbid('a74b1b7f-71a5-4011-9441-d0b5e4122711');
+
+      const calls = (mockFetch as ReturnType<typeof vi.fn>).mock.calls as Array<[string | URL | Request, RequestInit | undefined]>;
+      // Verify no MusicBrainz Lucene search was called (the search endpoint has ?query= or artist? in it)
+      const luceneSearchCalls = calls.filter(([url]) => {
+        const urlStr = typeof url === 'string' ? url : url instanceof URL ? url.toString() : (url as Request).url;
+        return urlStr.includes('musicbrainz.org/ws/2/artist?') || urlStr.includes('query=');
+      });
+      expect(luceneSearchCalls).toHaveLength(0);
+    });
+
+    it('returns err with NotFoundError when getArtistDetails fails (MBID not found)', async () => {
+      const mockFetch = createRoutedMockFetch([
+        {
+          pattern: 'musicbrainz.org/ws/2/artist/',
+          response: { status: 404, body: {} },
+        },
+      ]);
+
+      const engine = createEngine({
+        fetchFn: mockFetch,
+        mbQueue: makeFastMbQueue(),
+      });
+
+      const result = await engine.exploreByMbid('a74b1b7f-71a5-4011-9441-d0b5e4122711');
+
+      expect(result.ok).toBe(false);
+      if (result.ok) return;
+      expect(result.error.kind).toBe('NotFoundError');
     });
   });
 });

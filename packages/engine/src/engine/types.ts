@@ -30,4 +30,5 @@ export interface ExploreResult extends ArtistGraphData {
 export interface Engine {
   explore(artistName: string): Promise<Result<ExploreResult, ProviderError>>;
   expand(mbid: string): Promise<Result<ExploreResult, ProviderError>>;
+  exploreByMbid(mbid: string): Promise<Result<ExploreResult, ProviderError>>;
 }
