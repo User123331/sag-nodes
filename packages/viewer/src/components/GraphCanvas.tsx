@@ -394,6 +394,26 @@ export function GraphCanvas() {
     ctx.fillStyle = NO_GENRE_COLOR; // Default: no genre data on ForceNode
     ctx.fill();
 
+    // Genre ring: colored neon glow for nodes with tags
+    const genreRingColor = (node.tags !== undefined && node.tags.length > 0)
+      ? genreColor(node.tags)
+      : NO_GENRE_COLOR;
+
+    if (genreRingColor !== NO_GENRE_COLOR) {
+      ctx.save();
+      ctx.shadowColor = genreRingColor;
+      ctx.shadowBlur = 3;
+      if (hasSelection && !isSelected) {
+        ctx.globalAlpha = 0.3;
+      }
+      ctx.beginPath();
+      ctx.arc(x, y, radius + 1, 0, 2 * Math.PI);
+      ctx.strokeStyle = genreRingColor;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    }
+
     // Seed ring: white 2px
     if (isSeed) {
       ctx.beginPath();

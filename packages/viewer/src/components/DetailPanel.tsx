@@ -4,8 +4,12 @@ import { toast } from 'sonner';
 import { useGraphStore } from '../store/index.js';
 import type { ForceNode, ForceLink } from '../types/graph.js';
 import { buildExternalLinks } from '../utils/externalLinks.js';
-import { NO_GENRE_COLOR } from '../utils/genreCluster.js';
+import { genreColor } from '../utils/genreCluster.js';
 import './DetailPanel.css';
+
+function titleCase(s: string): string {
+  return s.replace(/\b\w/g, c => c.toUpperCase());
+}
 
 export function DetailPanel() {
   const {
@@ -129,6 +133,31 @@ export function DetailPanel() {
         <div className="detail-panel-disambiguation">{node.disambiguation}</div>
       )}
 
+      {/* Genre tags */}
+      {node.tags !== undefined && node.tags.length > 0 && (
+        <div className="detail-panel-section">
+          <div className="detail-panel-label">Genres</div>
+          <div>
+            {node.tags.slice(0, 8).map((tag) => {
+              const tagName = typeof tag === 'string' ? tag : tag.name;
+              const color = genreColor([tag]);
+              return (
+                <span
+                  key={tagName}
+                  className="genre-badge"
+                  style={{
+                    backgroundColor: color.replace('hsl(', 'hsla(').replace(')', ', 0.2)'),
+                    color: color,
+                  }}
+                >
+                  {titleCase(tagName)}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Fan count */}
       {fanCountFormatted !== null && (
         <div className="detail-panel-section">
@@ -191,7 +220,7 @@ export function DetailPanel() {
             >
               <span
                 className="connected-dot"
-                style={{ background: NO_GENRE_COLOR }}
+                style={{ background: genreColor(connNode.tags ?? []) }}
               />
               <span className="connected-artist-name">{connNode.name}</span>
               <span className="connected-artist-score">
