@@ -142,5 +142,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 3. Interactive Viewer | 5/5 | Complete   | 2026-03-16 |
 | 4. Controls, Export, and Polish | 3/3 | Complete   | 2026-03-17 |
 | 5. Fix Integration Wiring | 2/2 | Complete   | 2026-03-17 |
-| 6. Genre Coloring Pipeline | 0/2 | In Progress | — |
+| 6. Genre Coloring Pipeline | 1/2 | In Progress|  |
 | 7. Visual Polish & Animations | 0/0 | Pending | — |

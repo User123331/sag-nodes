@@ -51,7 +51,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **VIS-01**: Force-directed graph rendering via react-force-graph-2d with Canvas/WebGL
 - [x] **VIS-02**: Node sizing by popularity/prominence metric
-- [ ] **VIS-03**: Node coloring by genre cluster (d3-scale-chromatic palette)
+- [x] **VIS-03**: Node coloring by genre cluster (d3-scale-chromatic palette)
 - [x] **VIS-04**: Edge thickness/opacity by similarity strength
 - [x] **VIS-05**: Zoom, pan, drag interactions (mouse + trackpad)
 - [x] **VIS-06**: Click-to-expand — clicking a node fetches and renders its similar artists
@@ -173,7 +173,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PKG-02 | Phase 2 | Complete |
 | VIS-01 | Phase 3 | Complete |
 | VIS-02 | Phase 3 | Complete |
-| VIS-03 | Phase 6 | Pending |
+| VIS-03 | Phase 6 | Complete |
 | VIS-04 | Phase 5 | Complete |
 | VIS-05 | Phase 3 | Complete |
 | VIS-06 | Phase 3 | Complete |
