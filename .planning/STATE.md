@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-17T09:17:19.216Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-17T09:43:24.187Z"
 last_activity: 2026-03-16 -- Plan 03-02 complete (SearchBar + GraphCanvas + App layout)
 progress:
   total_phases: 7
   completed_phases: 4
-  total_plans: 12
-  completed_plans: 12
+  total_plans: 14
+  completed_plans: 13
   percent: 85
 ---
 
@@ -64,6 +64,7 @@ Progress: [████████░░] 85%
 | Phase 04-controls-export-and-polish P04-02 | 5 | 2 tasks | 8 files |
 | Phase 04-controls-export-and-polish P04-02 | 10 | 3 tasks | 8 files |
 | Phase 04-controls-export-and-polish P04-03 | 4 | 1 tasks | 3 files |
+| Phase 05-fix-integration-wiring P05-01 | 2 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,8 @@ Recent decisions affecting current work:
 - [Phase 04-controls-export-and-polish]: ControlPanel hidden (display:none) when seedMbid is null — sidebar only appears once a graph is loaded
 - [Phase 04-controls-export-and-polish]: Filter chain (providers->depth->nodeLimit) in useMemo passes new array to graphData; ForceGraph2D rerenders with filtered node set
 - [Phase 04-controls-export-and-polish]: Viewer barrel export uses .js extension for ESM; all peer deps externalized in vite.lib.config.ts rollupOptions
+- [Phase 05-fix-integration-wiring]: exploreByMbid resolves MBID by calling getArtistDetails(mbid) directly — no Lucene text search, no name disambiguation needed
+- [Phase 05-fix-integration-wiring]: EntityResolver.mbProvider changed from private to readonly to enable EngineImpl direct access for exploreByMbid
 
 ### Pending Todos
 
@@ -118,6 +121,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T09:17:19.209Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-fix-integration-wiring/05-CONTEXT.md
+Last session: 2026-03-17T09:43:24.185Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None

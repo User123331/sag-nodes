@@ -95,7 +95,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Sharing & Navigation
 
-- [ ] **SHAR-01**: URL-based graph state — seed artist + depth + provider config encoded in URL
+- [x] **SHAR-01**: URL-based graph state — seed artist + depth + provider config encoded in URL
 - [x] **SHAR-02**: Keyboard navigation — Tab/arrows through nodes, Enter to expand, Escape to deselect, "/" to search
 
 ### Packaging
@@ -203,7 +203,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAT-03 | Phase 4 | Complete |
 | EXPT-01 | Phase 4 | Complete |
 | EXPT-02 | Phase 4 | Complete |
-| SHAR-01 | Phase 5 | Pending |
+| SHAR-01 | Phase 5 | Complete |
 | SHAR-02 | Phase 4 | Complete |
 | PKG-03 | Phase 4 | Complete |
 | PKG-04 | Phase 4 | Complete |
