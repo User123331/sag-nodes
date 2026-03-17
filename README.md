@@ -2,6 +2,8 @@
 
 An open-source artist similarity graph engine with an interactive React viewer. Explore music relationships through a force-directed graph powered by multiple live APIs.
 
+![Similar Artists Graph](sag-nodes.png)
+
 ## What It Does
 
 Type an artist name and instantly explore their musical neighborhood as an interactive graph. Each node represents an artist, edges show similarity relationships, and you can click any artist to expand their connections recursively. The engine aggregates data from 6+ music platforms (MusicBrainz, ListenBrainz, Last.fm, Deezer, TasteDive, Spotify) to build a rich, cross-platform view of artist relationships.
@@ -41,6 +43,33 @@ This is a pnpm workspace monorepo with two packages:
 - **`packages/viewer`** — React viewer app (Vite, react-force-graph-2d, Zustand)
 
 The engine is provider-agnostic and uses a `Result<T,E>` pattern for error handling. All providers implement a common interface with injectable dependencies (cache, queue, fetch).
+
+## Packages
+
+### `@similar-artists-graph/engine`
+
+| Package | Description |
+|---|---|
+| `graphology` | Graph data structure library |
+| `graphology-traversal` | Graph traversal utilities |
+| `p-queue` | Promise queue with concurrency control |
+| `string-similarity` | Fuzzy string matching for artist name deduplication |
+
+Dev dependencies: `tsup`, `typescript`, `vitest`, `@types/node`, `graphology-types`
+
+### `@similar-artists-graph/viewer`
+
+| Package | Description |
+|---|---|
+| `react` | UI library (v19) |
+| `react-dom` | React DOM renderer |
+| `react-force-graph-2d` | 2D force-directed graph canvas renderer |
+| `zustand` | Lightweight state management |
+| `d3-force` | Force simulation for graph layout |
+| `d3-scale-chromatic` | Color scales for node styling |
+| `sonner` | Toast notification library |
+
+Dev dependencies: `vite`, `@vitejs/plugin-react`, `vitest`, `typescript`, `jsdom`, `@testing-library/react`, `vitest-canvas-mock`
 
 ## Requirements
 
