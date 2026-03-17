@@ -13,6 +13,7 @@ export interface ForceNode {
     spotifyId?: string;
     deezerId?: string;
   };
+  addedAt?: number;  // timestamp ms — set on new nodes in addExpansion for bloom animation
   // d3 simulation fields — mutable, added by force layout
   x?: number;
   y?: number;
