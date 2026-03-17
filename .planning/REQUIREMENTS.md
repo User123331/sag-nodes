@@ -75,28 +75,28 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Control Panel
 
-- [ ] **CTRL-01**: Max depth slider (1-5)
-- [ ] **CTRL-02**: Provider toggles — enable/disable each data source, graph re-renders on toggle
-- [ ] **CTRL-03**: Node limit slider
-- [ ] **CTRL-04**: "Reset graph" button
-- [ ] **CTRL-05**: "Export graph data" button (JSON download)
-- [ ] **CTRL-06**: Layout toggle (force-directed / radial / tree)
+- [x] **CTRL-01**: Max depth slider (1-5)
+- [x] **CTRL-02**: Provider toggles — enable/disable each data source, graph re-renders on toggle
+- [x] **CTRL-03**: Node limit slider
+- [x] **CTRL-04**: "Reset graph" button
+- [x] **CTRL-05**: "Export graph data" button (JSON download)
+- [x] **CTRL-06**: Layout toggle (force-directed / radial / tree)
 
 ### Provider Status
 
-- [ ] **STAT-01**: Status indicator per provider (active, rate-limited, erroring)
-- [ ] **STAT-02**: Rate limit remaining display per provider
+- [x] **STAT-01**: Status indicator per provider (active, rate-limited, erroring)
+- [x] **STAT-02**: Rate limit remaining display per provider
 - [ ] **STAT-03**: Visual feedback during multi-provider fetching
 
 ### Export
 
-- [ ] **EXPT-01**: Export current graph state as JSON (compatible with re-import)
-- [ ] **EXPT-02**: Export as GEXF format for Gephi compatibility
+- [x] **EXPT-01**: Export current graph state as JSON (compatible with re-import)
+- [x] **EXPT-02**: Export as GEXF format for Gephi compatibility
 
 ### Sharing & Navigation
 
-- [ ] **SHAR-01**: URL-based graph state — seed artist + depth + provider config encoded in URL
-- [ ] **SHAR-02**: Keyboard navigation — Tab/arrows through nodes, Enter to expand, Escape to deselect, "/" to search
+- [x] **SHAR-01**: URL-based graph state — seed artist + depth + provider config encoded in URL
+- [x] **SHAR-02**: Keyboard navigation — Tab/arrows through nodes, Enter to expand, Escape to deselect, "/" to search
 
 ### Packaging
 
@@ -192,19 +192,19 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UI-02 | Phase 3 | Complete |
 | UI-03 | Phase 3 | Complete |
 | UI-04 | Phase 3 | Complete |
-| CTRL-01 | Phase 4 | Pending |
-| CTRL-02 | Phase 4 | Pending |
-| CTRL-03 | Phase 4 | Pending |
-| CTRL-04 | Phase 4 | Pending |
-| CTRL-05 | Phase 4 | Pending |
-| CTRL-06 | Phase 4 | Pending |
-| STAT-01 | Phase 4 | Pending |
-| STAT-02 | Phase 4 | Pending |
+| CTRL-01 | Phase 4 | Complete |
+| CTRL-02 | Phase 4 | Complete |
+| CTRL-03 | Phase 4 | Complete |
+| CTRL-04 | Phase 4 | Complete |
+| CTRL-05 | Phase 4 | Complete |
+| CTRL-06 | Phase 4 | Complete |
+| STAT-01 | Phase 4 | Complete |
+| STAT-02 | Phase 4 | Complete |
 | STAT-03 | Phase 4 | Pending |
-| EXPT-01 | Phase 4 | Pending |
-| EXPT-02 | Phase 4 | Pending |
-| SHAR-01 | Phase 4 | Pending |
-| SHAR-02 | Phase 4 | Pending |
+| EXPT-01 | Phase 4 | Complete |
+| EXPT-02 | Phase 4 | Complete |
+| SHAR-01 | Phase 4 | Complete |
+| SHAR-02 | Phase 4 | Complete |
 | PKG-03 | Phase 4 | Pending |
 | PKG-04 | Phase 4 | Pending |
 

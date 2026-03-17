@@ -95,4 +95,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Engine Foundation | 2/2 | Complete   | 2026-03-16 |
 | 2. Multi-Provider Data Pipeline | 2/2 | Complete   | 2026-03-16 |
 | 3. Interactive Viewer | 5/5 | Complete   | 2026-03-16 |
-| 4. Controls, Export, and Polish | 0/3 | Not started | - |
+| 4. Controls, Export, and Polish | 1/3 | In Progress|  |

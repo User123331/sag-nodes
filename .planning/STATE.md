@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-05-PLAN.md
-last_updated: "2026-03-16T23:15:28.759Z"
+stopped_at: Completed 04-controls-export-and-polish/04-01-PLAN.md
+last_updated: "2026-03-17T02:17:38.050Z"
 last_activity: 2026-03-16 -- Plan 03-02 complete (SearchBar + GraphCanvas + App layout)
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 12
+  completed_plans: 10
   percent: 85
 ---
 
@@ -60,6 +60,7 @@ Progress: [████████░░] 85%
 | Phase 03-interactive-viewer P03 | 20 | 3 tasks | 6 files |
 | Phase 03-interactive-viewer P04 | 11 | 2 tasks | 6 files |
 | Phase 03-interactive-viewer P05 | 15 | 2 tasks | 3 files |
+| Phase 04-controls-export-and-polish P04-01 | 10 | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,9 @@ Recent decisions affecting current work:
 - [Phase 03-interactive-viewer]: EngineConfig.mbQueue optional injection pattern lets tests bypass 1 req/s throttle while production uses default queue
 - [Phase 03-interactive-viewer]: × button visibility uses hasGraph (seedMbid !== null) — graph existence is the correct predicate, not selectedArtist
 - [Phase 03-interactive-viewer]: Engine.explore() resets graphBuilder before each new exploration to prevent stale node persistence after Reset
+- [Phase 04-controls-export-and-polish]: depthFromSeed defaults to 0 in toForceNode; graphSlice overrides contextually (setGraph: seed=0, others=1; addExpansion: expandingNode.depthFromSeed+1)
+- [Phase 04-controls-export-and-polish]: engine.explore() takes only artistName (1 arg) — useUrlState cannot pass maxDepth as config; depth is restored only to controlSlice for client-side filtering
+- [Phase 04-controls-export-and-polish]: filterByProviders recalculates fusedScore as average of enabled provider rawScores only
 
 ### Pending Todos
 
@@ -108,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T23:14:37.554Z
-Stopped at: Completed 03-05-PLAN.md
+Last session: 2026-03-17T02:17:38.047Z
+Stopped at: Completed 04-controls-export-and-polish/04-01-PLAN.md
 Resume file: None
