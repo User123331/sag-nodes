@@ -127,8 +127,11 @@ Plans:
   2. Tiny particles drift along edge paths with speed proportional to fusedScore — high similarity = fast stream, low = slow drift
   3. Expanding a node sends a visible ripple ring outward that fades over ~600ms
   4. A "cluster" layout mode groups nodes by genre family using custom d3 force attractors, togglable alongside force/radial
+**Plans**: 2 plans
 
-Plans: TBD
+Plans:
+- [ ] 07-01-PLAN.md — Dependencies, types, store extensions, animation math utilities, and tests
+- [ ] 07-02-PLAN.md — GraphCanvas animations (bloom, edge grow, particles, ripple), cluster layout, progressive labels, ControlPanel cluster button
 
 ## Progress
 
@@ -143,4 +146,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 | 4. Controls, Export, and Polish | 3/3 | Complete   | 2026-03-17 |
 | 5. Fix Integration Wiring | 2/2 | Complete   | 2026-03-17 |
 | 6. Genre Coloring Pipeline | 2/2 | Complete   | 2026-03-17 |
-| 7. Visual Polish & Animations | 0/0 | Pending | — |
+| 7. Visual Polish & Animations | 0/2 | Pending | — |
