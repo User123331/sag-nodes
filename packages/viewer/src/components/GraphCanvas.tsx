@@ -2,6 +2,8 @@ import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import type { ForceGraphMethods } from 'react-force-graph-2d';
 import { forceCollide, forceManyBody, forceRadial } from 'd3-force';
+import { easeCubicOut } from 'd3-ease';
+import forceClustering from 'd3-force-clustering';
 import { useShallow } from 'zustand/react/shallow';
 import { toast } from 'sonner';
 import { useGraphStore } from '../store/index.js';
@@ -10,10 +12,10 @@ import { genreColor, NO_GENRE_COLOR } from '../utils/genreCluster.js';
 import { nodeRadius } from '../utils/nodeSize.js';
 import { filterByDepth, filterByProviders, filterByNodeLimit } from '../utils/providerFilter.js';
 import { findNearestInDirection } from '../utils/keyboardNav.js';
+import { clamp, lerp, fract, BLOOM_DURATION_MS, EDGE_GROW_DURATION_MS, RIPPLE_DURATION_MS, RIPPLE_MAX_RADIUS, PARTICLE_RADIUS, PARTICLE_SKIP_SCALE } from '../utils/animationMath.js';
 import type { ProviderId } from '@similar-artists-graph/engine';
 import './GraphCanvas.css';
 
-const LABEL_ZOOM_THRESHOLD = 2.5;
 const DOUBLE_CLICK_MS = 300;
 
 export function GraphCanvas() {
@@ -94,6 +96,10 @@ export function GraphCanvas() {
   const enabledProvidersRef = useRef(enabledProviders);
   const cooldownTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
+  // Ripple animation refs
+  const rippleNodeMbidRef = useRef<string | null>(null);
+  const rippleStartTimeRef = useRef<number | null>(null);
+
   useEffect(() => { seedMbidRef.current = seedMbid; }, [seedMbid]);
   useEffect(() => { selectedNodeRef.current = selectedNode; }, [selectedNode]);
   useEffect(() => { expandingMbidRef.current = expandingMbid; }, [expandingMbid]);
@@ -172,19 +178,36 @@ export function GraphCanvas() {
     }
   });
 
-  // Radial layout toggle
+  // Layout toggle — handles force, radial, and cluster modes
   useEffect(() => {
     const graph = graphRef.current;
     if (!graph) return;
-    if (layoutMode === 'radial') {
+
+    if (layoutMode === 'cluster') {
+      const clusterForce = forceClustering<ForceNode>()
+        .clusterId((node) => {
+          if (!node.tags || node.tags.length === 0) return node.mbid; // unique ID = scatter freely
+          const first = node.tags[0]!;
+          return typeof first === 'string' ? first : first.name;
+        })
+        .strength(0.3)
+        .distanceMin(1);
+      graph.d3Force('cluster', clusterForce as unknown as Parameters<typeof graph.d3Force>[1]);
+      graph.d3Force('radial', null);
+      graph.d3Force('charge', forceManyBody().strength(-80) as unknown as Parameters<typeof graph.d3Force>[1]);
+      graph.d3ReheatSimulation();
+    } else if (layoutMode === 'radial') {
       const radialFn = forceRadial<ForceNode>(
         (node) => (node.depthFromSeed ?? 0) * 120,
         0, 0
       ).strength(0.8);
+      graph.d3Force('cluster', null);
       graph.d3Force('radial', radialFn as unknown as Parameters<typeof graph.d3Force>[1]);
       graph.d3Force('charge', null);
       graph.d3ReheatSimulation();
     } else {
+      // 'force' mode: remove cluster and radial, restore charge
+      graph.d3Force('cluster', null);
       graph.d3Force('radial', null);
       graph.d3Force('charge', forceManyBody().strength(-80) as unknown as Parameters<typeof graph.d3Force>[1]);
       graph.d3ReheatSimulation();
@@ -200,6 +223,10 @@ export function GraphCanvas() {
 
     setExpandingMbid(node.mbid);
     setIsExpanding(true);
+
+    // Trigger ripple immediately on expansion (before API response)
+    rippleNodeMbidRef.current = node.mbid;
+    rippleStartTimeRef.current = Date.now();
 
     // Set all enabled providers to fetching
     enabledProvidersRef.current.forEach((id: ProviderId) => {
@@ -356,19 +383,39 @@ export function GraphCanvas() {
     }
   }, [focusedNodeMbid]);
 
+  // Cached popularity ranking for progressive label visibility (avoids per-node per-frame sorting)
+  const labelRankRef = useRef<Map<string, number>>(new Map());
+  useEffect(() => {
+    const sorted = [...nodes].sort((a, b) => (b.metadata?.nb_fan ?? 0) - (a.metadata?.nb_fan ?? 0));
+    const rankMap = new Map<string, number>();
+    sorted.forEach((n, i) => rankMap.set(n.mbid, i));
+    labelRankRef.current = rankMap;
+  }, [nodes]);
+
   // Node canvas renderer
   const renderNode = useCallback((
     node: ForceNode,
     ctx: CanvasRenderingContext2D,
     globalScale: number
   ) => {
-    const radius = nodeRadius(node.metadata?.nb_fan);
+    const baseRadius = nodeRadius(node.metadata?.nb_fan);
     const x = node.x ?? 0;
     const y = node.y ?? 0;
 
+    // --- Bloom animation: scale from 0 to full radius over 400ms ---
+    let radius = baseRadius;
+    if (node.addedAt !== undefined) {
+      const elapsed = Date.now() - node.addedAt;
+      if (elapsed < BLOOM_DURATION_MS) {
+        const t = clamp(elapsed / BLOOM_DURATION_MS, 0, 1);
+        radius = baseRadius * easeCubicOut(t);
+      }
+    }
+    radius = Math.max(0.5, radius); // minimum drawn radius to prevent invisible arc
+
     const isSelected = selectedNodeRef.current?.mbid === node.mbid;
     const isSeed = seedMbidRef.current === node.mbid;
-    const isExpanding = expandingMbidRef.current === node.mbid;
+    const isExpandingNode = expandingMbidRef.current === node.mbid;
     const hasSelection = selectedNodeRef.current !== null;
 
     // Dimming: non-selected nodes at 30% opacity when something is selected
@@ -378,8 +425,8 @@ export function GraphCanvas() {
       ctx.globalAlpha = 1.0;
     }
 
-    // Expanding glow
-    if (isExpanding && expansionStartTimeRef.current !== null) {
+    // Expanding glow (pulsing blue ring while waiting for API)
+    if (isExpandingNode && expansionStartTimeRef.current !== null) {
       const elapsed = Date.now() - expansionStartTimeRef.current;
       const alpha = Math.sin(elapsed / 200) * 0.3 + 0.5;
       ctx.beginPath();
@@ -391,7 +438,7 @@ export function GraphCanvas() {
     // Node fill
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = NO_GENRE_COLOR; // Default: no genre data on ForceNode
+    ctx.fillStyle = NO_GENRE_COLOR;
     ctx.fill();
 
     // Genre ring: colored neon glow for nodes with tags
@@ -444,21 +491,38 @@ export function GraphCanvas() {
     // Reset alpha
     ctx.globalAlpha = 1.0;
 
-    // Zoom-adaptive labels
-    const showLabel = globalScale >= LABEL_ZOOM_THRESHOLD || isSeed;
+    // --- Progressive label visibility based on zoom ---
+    const rank = labelRankRef.current.get(node.mbid) ?? Infinity;
+    const totalNodes = nodesRef.current.length;
+    let showLabel = false;
+    if (isSeed) {
+      showLabel = true; // always show seed label
+    } else if (globalScale >= 4) {
+      showLabel = true; // all labels at high zoom
+    } else if (globalScale >= 2) {
+      showLabel = rank < Math.ceil(totalNodes / 2); // top 50% by popularity
+    } else if (globalScale >= 1) {
+      showLabel = rank < 10; // top 10 by popularity
+    }
+    // else globalScale < 1: only seed (handled above)
+
     if (showLabel) {
-      const fontSize = Math.max(6, 8 / globalScale);
-      ctx.font = `${fontSize}px ui-monospace, monospace`;
-      ctx.fillStyle = '#ffffff';
+      const fontSize = 10 / globalScale; // fixed ~10px screen-space
+      ctx.font = `${fontSize}px ui-monospace, 'Cascadia Code', Menlo, 'Courier New', monospace`;
+      ctx.fillStyle = '#f5f5f5';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.globalAlpha = hasSelection && !isSelected ? 0.3 : 1.0;
+      // Text shadow for readability: draw text in black offset, then white on top
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2 / globalScale;
+      ctx.strokeText(node.name, x, y + radius + 2);
       ctx.fillText(node.name, x, y + radius + 2);
       ctx.globalAlpha = 1.0;
     }
   }, []);
 
-  // Link canvas renderer
+  // Link canvas renderer with edge grow animation and particle drift
   const renderLink = useCallback((
     link: ForceLink,
     ctx: CanvasRenderingContext2D,
@@ -482,17 +546,94 @@ export function GraphCanvas() {
       opacity = Math.max(0.05, link.fusedScore) * 0.1;
     }
 
+    // --- Edge grow animation: new edges grow from source to target over 400ms ---
+    let progress = 1.0;
+    const targetNode = target;
+    if (targetNode.addedAt !== undefined) {
+      const elapsed = Date.now() - targetNode.addedAt;
+      if (elapsed < EDGE_GROW_DURATION_MS) {
+        progress = easeCubicOut(clamp(elapsed / EDGE_GROW_DURATION_MS, 0, 1));
+      }
+    }
+
+    const endX = sx + (tx - sx) * progress;
+    const endY = sy + (ty - sy) * progress;
+
     ctx.beginPath();
     ctx.moveTo(sx, sy);
-    ctx.lineTo(tx, ty);
+    ctx.lineTo(endX, endY);
     ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
 
-    // Edge thickness: 0.5px (weak similarity) to 1.5px (strong similarity), screen-space
-    const baseWidth = 0.5 + link.fusedScore;  // fusedScore 0..1 maps to 0.5..1.5
+    // Edge thickness: 0.5px (weak) to 1.5px (strong), screen-space
+    const baseWidth = 0.5 + link.fusedScore;
     const selectionBoost = connectedToSelected ? 1.5 : 1.0;
     ctx.lineWidth = (baseWidth * selectionBoost) / globalScale;
-
     ctx.stroke();
+
+    // --- Particle drift on edges ---
+    // Skip particles at extreme zoom-out or during edge grow
+    if (globalScale < PARTICLE_SKIP_SCALE || progress < 1.0) return;
+
+    // Dim particles when selection active and edge not connected
+    if (selected !== null && !connectedToSelected) return;
+
+    const count = link.fusedScore > 0.6 ? 3 : link.fusedScore > 0.3 ? 2 : 1;
+    const cycleDuration = 4000 - (link.fusedScore * 2500); // 1500ms fast to 4000ms slow
+    const now = Date.now();
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+
+    for (let i = 0; i < count; i++) {
+      const phaseOffset = i / count;
+      // Forward particle
+      const tFwd = fract((now / cycleDuration) + phaseOffset);
+      const px = lerp(sx, tx, tFwd);
+      const py = lerp(sy, ty, tFwd);
+      ctx.beginPath();
+      ctx.arc(px, py, PARTICLE_RADIUS, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // Backward particle
+      const tBwd = 1 - tFwd;
+      const bx = lerp(sx, tx, tBwd);
+      const by = lerp(sy, ty, tBwd);
+      ctx.beginPath();
+      ctx.arc(bx, by, PARTICLE_RADIUS, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }, []);
+
+  // Post-render callback for ripple effect
+  const renderFramePost = useCallback((ctx: CanvasRenderingContext2D, globalScale: number) => {
+    const mbid = rippleNodeMbidRef.current;
+    const startTime = rippleStartTimeRef.current;
+    if (!mbid || !startTime) return;
+
+    const elapsed = Date.now() - startTime;
+    if (elapsed > RIPPLE_DURATION_MS) {
+      rippleNodeMbidRef.current = null;
+      rippleStartTimeRef.current = null;
+      return;
+    }
+
+    const node = nodesRef.current.find(n => n.mbid === mbid);
+    if (!node || node.x === undefined || node.y === undefined) return;
+
+    const t = clamp(elapsed / RIPPLE_DURATION_MS, 0, 1);
+    const rippleRadius = RIPPLE_MAX_RADIUS * t;
+    const alpha = (1 - t) * 0.8;
+    const color = (node.tags !== undefined && node.tags.length > 0)
+      ? genreColor(node.tags)
+      : '#3b82f6';
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, rippleRadius, 0, 2 * Math.PI);
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = 2 / globalScale;
+    ctx.stroke();
+    ctx.restore();
   }, []);
 
   const isEmpty = nodes.length === 0 && !isExploring;
@@ -518,11 +659,12 @@ export function GraphCanvas() {
           linkCanvasObjectMode={() => 'replace'}
           onNodeClick={handleNodeClick}
           onBackgroundClick={handleBackgroundClick}
+          onRenderFramePost={renderFramePost}
           enableNodeDrag={true}
           enableZoomInteraction={true}
           enablePanInteraction={true}
           warmupTicks={50}
-          cooldownTicks={100}
+          cooldownTicks={Infinity}
           d3AlphaDecay={0.02}
           d3VelocityDecay={0.3}
           width={canvasWidth}
