@@ -2,6 +2,29 @@ import type { ForceNode } from '../types/graph.js';
 
 type Direction = 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight';
 
+export function getConnectedNeighbors(
+  mbid: string,
+  links: ReadonlyArray<{ sourceMbid: string; targetMbid: string; fusedScore: number }>,
+  nodes: ForceNode[],
+): ForceNode[] {
+  const neighborMbids = new Set<string>();
+  links.forEach(l => {
+    if (l.sourceMbid === mbid) neighborMbids.add(l.targetMbid);
+    else if (l.targetMbid === mbid) neighborMbids.add(l.sourceMbid);
+  });
+
+  const neighborNodes = nodes.filter(n => neighborMbids.has(n.mbid));
+
+  // Sort descending by fusedScore of the connecting edge
+  const scoreMap = new Map<string, number>();
+  links.forEach(l => {
+    if (l.sourceMbid === mbid) scoreMap.set(l.targetMbid, l.fusedScore);
+    else if (l.targetMbid === mbid) scoreMap.set(l.sourceMbid, l.fusedScore);
+  });
+
+  return neighborNodes.sort((a, b) => (scoreMap.get(b.mbid) ?? 0) - (scoreMap.get(a.mbid) ?? 0));
+}
+
 export function findNearestInDirection(
   focused: ForceNode,
   nodes: ForceNode[],
