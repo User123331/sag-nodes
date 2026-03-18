@@ -4,6 +4,11 @@
 
 Build a multi-provider artist similarity graph engine and interactive viewer from the ground up. Start with monorepo infrastructure and the MusicBrainz identity anchor, then layer in all remaining providers with entity resolution and graph construction, then build the interactive force-directed viewer, and finally add controls, export, and polish features. Each phase delivers a verifiable capability that the next phase depends on.
 
+## Milestones
+
+- v1.0 MVP - Phases 1-7 (shipped 2026-03-18)
+- v1.1 UX Polish & Data Completeness - Phases 8-10 (in progress)
+
 ## Phases
 
 **Phase Numbering:**
@@ -12,15 +17,29 @@ Build a multi-provider artist similarity graph engine and interactive viewer fro
 
 Decimal phases appear between their surrounding integers in numeric order.
 
+<details>
+<summary>v1.0 MVP (Phases 1-7) - SHIPPED 2026-03-18</summary>
+
 - [x] **Phase 1: Engine Foundation** - Monorepo scaffold, core types, rate-limited request infrastructure, MusicBrainz provider, and caching layer (completed 2026-03-16)
 - [x] **Phase 2: Multi-Provider Data Pipeline** - All remaining providers, cross-platform entity resolution, graph construction, and engine public API (completed 2026-03-16)
 - [x] **Phase 3: Interactive Viewer** - Force-directed graph rendering, artist search, detail panel, click-to-expand, and dark-first UI (completed 2026-03-16)
 - [x] **Phase 4: Controls, Export, and Polish** - Control panel, provider status dashboard, graph export, URL sharing, keyboard nav, and Next.js packaging (completed 2026-03-17)
 - [x] **Phase 5: Fix Integration Wiring** - URL restore fix (SHAR-01), rate-limit cooldown dispatch (STAT-02), edge thickness by similarity (VIS-04) (completed 2026-03-17)
 - [x] **Phase 6: Genre Coloring Pipeline** - Tags in ArtistNode, provider genre population, genre-based node coloring (VIS-03) (completed 2026-03-17)
-- [x] **Phase 7: Visual Polish & Animations** - Entry bloom animations, ambient particle drift on edges, expansion ripple effect, cluster gravity layout mode (gap closure in progress) (completed 2026-03-18)
+- [x] **Phase 7: Visual Polish & Animations** - Entry bloom animations, ambient particle drift on edges, expansion ripple effect, cluster gravity layout mode (completed 2026-03-18)
+
+</details>
+
+### v1.1 UX Polish & Data Completeness (In Progress)
+
+- [ ] **Phase 8: Engine Data Wiring** - Wire node limit slider to engine budget, fix hardcoded toast, store MusicBrainz external URLs in node metadata
+- [ ] **Phase 9: Graph Rendering & Controls** - Spatial arrow nav, larger labels, thinner genre outlines, particle toggle off by default, slider range update
+- [ ] **Phase 10: Panel Overhaul** - Manual panel collapse, minimized views for both panels, external links display in detail panel
 
 ## Phase Details
+
+<details>
+<summary>v1.0 MVP Phase Details (Phases 1-7)</summary>
 
 ### Phase 1: Engine Foundation
 **Goal**: A working monorepo with typed infrastructure where a developer can query MusicBrainz for an artist and get rate-limited, cached responses through the engine's provider interface
@@ -32,11 +51,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Calling `searchArtist("Radiohead")` through the MusicBrainz provider returns artist data with an MBID, and a second identical call within TTL returns cached data without hitting the API
   4. Making rapid sequential requests to MusicBrainz automatically queues them at 1 req/s and retries with backoff on 429/503 responses
   5. When MusicBrainz is unreachable, the engine degrades gracefully with an error status rather than throwing unhandled exceptions
-**Plans**: TBD
+**Plans**: 2/2 complete
 
 Plans:
-- [ ] 01-01: Monorepo scaffold and build pipeline
-- [ ] 01-02: Provider interface, rate-limited queue, cache, and MusicBrainz adapter
+- [x] 01-01: Monorepo scaffold and build pipeline
+- [x] 01-02: Provider interface, rate-limited queue, cache, and MusicBrainz adapter
 
 ### Phase 2: Multi-Provider Data Pipeline
 **Goal**: The engine fetches similarity data from 5+ providers, resolves artist identities across platforms using MBID as anchor, deduplicates results, and exposes a public API that returns a weighted graph of artist nodes and similarity edges
@@ -48,11 +67,11 @@ Plans:
   3. Calling `engine.expand(nodeId)` on any node in the graph adds new similar artists without duplicating existing nodes, and the total node count never exceeds the configured budget (default 150)
   4. Searching for an ambiguous artist name like "John Williams" correctly distinguishes between different artists via MBID resolution rather than silently merging them
   5. The engine package imports and runs correctly in both Node.js (`import { createEngine } from '@similar-artists-graph/engine'`) and browser environments without browser-only dependencies
-**Plans**: TBD
+**Plans**: 2/2 complete
 
 Plans:
-- [ ] 02-01: Provider adapters (ListenBrainz, Last.fm, Deezer, TasteDive, Spotify) and entity resolution
-- [ ] 02-02: Graph builder, engine facade API, and packaging validation
+- [x] 02-01: Provider adapters (ListenBrainz, Last.fm, Deezer, TasteDive, Spotify) and entity resolution
+- [x] 02-02: Graph builder, engine facade API, and packaging validation
 
 ### Phase 3: Interactive Viewer
 **Goal**: Users can search for any artist and explore an interactive force-directed graph with click-to-expand, rich detail panels, and smooth performance at 200+ nodes
@@ -64,12 +83,12 @@ Plans:
   3. Clicking a node opens a slide-in detail panel showing the artist's name, image, genres, cross-platform listener/fan counts, external links (Spotify, Last.fm, Deezer, etc.), similarity score to seed, and list of connected artists
   4. The graph renders at 200+ nodes without noticeable lag, with zoom, pan, and drag interactions all responsive on a standard laptop
   5. Nodes are sized by popularity and colored by genre cluster, edges vary in thickness/opacity by similarity strength, and the overall UI is dark-first with minimal chrome
-**Plans**: 3 plans
+**Plans**: 5/5 complete
 
 Plans:
-- [ ] 03-01-PLAN.md — Dependencies, types, Zustand store, utilities, dark theme CSS, and test infrastructure
-- [ ] 03-02-PLAN.md — SearchBar with autocomplete and GraphCanvas with force-directed rendering
-- [ ] 03-03-PLAN.md — DetailPanel, App wiring, expansion coordination, and visual verification
+- [x] 03-01-PLAN.md -- Dependencies, types, Zustand store, utilities, dark theme CSS, and test infrastructure
+- [x] 03-02-PLAN.md -- SearchBar with autocomplete and GraphCanvas with force-directed rendering
+- [x] 03-03-PLAN.md -- DetailPanel, App wiring, expansion coordination, and visual verification
 
 ### Phase 4: Controls, Export, and Polish
 **Goal**: Users have full control over the graph exploration experience with provider toggles, depth/limit controls, data export, shareable URLs, keyboard navigation, and the viewer is packaged for Next.js consumption
@@ -81,12 +100,12 @@ Plans:
   3. User can export the current graph as JSON (re-importable) or GEXF (opens in Gephi), and the "Reset graph" button clears everything back to the search state
   4. The current graph state (seed artist, depth, provider config) is encoded in the URL so copying and sharing the URL reproduces the same graph; keyboard navigation (Tab/arrows through nodes, Enter to expand, Escape to deselect, "/" to focus search) works throughout
   5. Viewer graph component is importable into a Next.js app via `next/dynamic` with `{ ssr: false }` and individual viewer components are exportable for composition in external projects
-**Plans**: 3 plans
+**Plans**: 3/3 complete
 
 Plans:
-- [ ] 04-01-PLAN.md — State layer, utility functions (filtering, export, URL, keyboard nav), and unit tests
-- [ ] 04-02-PLAN.md — ControlPanel sidebar, ShortcutOverlay, GraphCanvas extensions (filtering, radial layout, keyboard nav), and visual verification
-- [ ] 04-03-PLAN.md — Barrel exports, Vite library build, Next.js packaging, and SSR safety audit
+- [x] 04-01-PLAN.md -- State layer, utility functions (filtering, export, URL, keyboard nav), and unit tests
+- [x] 04-02-PLAN.md -- ControlPanel sidebar, ShortcutOverlay, GraphCanvas extensions (filtering, radial layout, keyboard nav), and visual verification
+- [x] 04-03-PLAN.md -- Barrel exports, Vite library build, Next.js packaging, and SSR safety audit
 
 ### Phase 5: Fix Integration Wiring
 **Goal**: Fix three integration bugs that prevent URL sharing, rate-limit countdown display, and edge thickness from working correctly
@@ -97,11 +116,11 @@ Plans:
   1. Copying a graph URL and pasting it in a new tab restores the same seed artist and graph state
   2. When a provider hits a rate limit, the ControlPanel shows a countdown timer until the cooldown expires
   3. Edges between highly similar artists are visibly thicker than edges between weakly similar artists
-**Plans**: 2 plans
+**Plans**: 2/2 complete
 
 Plans:
-- [ ] 05-01-PLAN.md — Engine exploreByMbid method and useUrlState restore fix (SHAR-01)
-- [ ] 05-02-PLAN.md — Rate-limit cooldown dispatch and edge thickness scaling (STAT-02, VIS-04)
+- [x] 05-01-PLAN.md -- Engine exploreByMbid method and useUrlState restore fix (SHAR-01)
+- [x] 05-02-PLAN.md -- Rate-limit cooldown dispatch and edge thickness scaling (STAT-02, VIS-04)
 
 ### Phase 6: Genre Coloring Pipeline
 **Goal**: Nodes are colored by genre cluster using real tag data from providers, replacing the current monochrome fallback
@@ -112,11 +131,11 @@ Plans:
   1. ArtistNode type includes tags field populated by MusicBrainz (and other providers where available)
   2. Graph nodes display distinct colors based on genre cluster, using the existing genreColor() utility
   3. Artists in the same genre family (e.g., rock, electronic, jazz) share similar colors
-**Plans**: 2 plans
+**Plans**: 2/2 complete
 
 Plans:
-- [ ] 06-01-PLAN.md — Engine type chain tags field + MusicBrainz tag enrichment step
-- [ ] 06-02-PLAN.md — HSL hash genreColor, neon ring rendering, DetailPanel genre badges
+- [x] 06-01-PLAN.md -- Engine type chain tags field + MusicBrainz tag enrichment step
+- [x] 06-02-PLAN.md -- HSL hash genreColor, neon ring rendering, DetailPanel genre badges
 
 ### Phase 7: Visual Polish & Animations
 **Goal**: Graph interactions feel alive with entry animations, ambient particle drift, expansion ripples, and a genre-clustered layout mode
@@ -125,31 +144,80 @@ Plans:
 **Gap Closure:** Closes gaps from Phase 7 UAT
 **Success Criteria** (what must be TRUE):
   1. New nodes bloom outward from the expanded node with a scale-up animation (~400ms); new edges grow from source to target
-  2. Tiny particles drift along edge paths at uniform speed — all particles move at the same pace
+  2. Tiny particles drift along edge paths at uniform speed -- all particles move at the same pace
   3. Expanding a node sends a visible ripple ring outward that fades over ~600ms
   4. A "cluster" layout mode groups nodes by genre family using custom d3 force attractors, togglable alongside force/radial
   5. Nodes settle into a stable layout and do not wiggle after the force simulation cools
   6. Double-clicking a node highlights both connecting edges AND neighbor node circles
   7. Arrow keys cycle through connected neighbors when a node is selected, syncing the detail panel
-**Plans**: 4 plans
+**Plans**: 4/4 complete
 
 Plans:
-- [ ] 07-01-PLAN.md — Dependencies, types, store extensions, animation math utilities, and tests
-- [ ] 07-02-PLAN.md — GraphCanvas animations (bloom, edge grow, particles, ripple), cluster layout, progressive labels, ControlPanel cluster button
-- [ ] 07-03-PLAN.md — Gap closure: node wiggle fix, particle size/speed uniformity, neighbor highlight rings
-- [ ] 07-04-PLAN.md — Gap closure: arrow key topology navigation with detail panel sync
+- [x] 07-01-PLAN.md -- Dependencies, types, store extensions, animation math utilities, and tests
+- [x] 07-02-PLAN.md -- GraphCanvas animations (bloom, edge grow, particles, ripple), cluster layout, progressive labels, ControlPanel cluster button
+- [x] 07-03-PLAN.md -- Gap closure: node wiggle fix, particle size/speed uniformity, neighbor highlight rings
+- [x] 07-04-PLAN.md -- Gap closure: arrow key topology navigation with detail panel sync
+
+</details>
+
+### Phase 8: Engine Data Wiring
+**Goal**: The engine correctly enforces the user's chosen node budget and exposes all available external URLs from MusicBrainz relations, so downstream viewer features have accurate data to display
+**Depends on**: Phase 7
+**Requirements**: BUDG-02, BUDG-03, LINK-01
+**Success Criteria** (what must be TRUE):
+  1. Changing the node limit slider value and triggering a new exploration results in the engine returning at most that many nodes (not the hardcoded 150 default)
+  2. Toast notifications about node limits display the actual configured limit value, not a hardcoded "150"
+  3. After exploring an artist, ArtistNode metadata contains external URLs (Spotify, Deezer, YouTube, ListenBrainz, etc.) extracted from MusicBrainz relation data
+**Plans**: TBD
+
+Plans:
+- [ ] 08-01: Wire slider value to engine maxNodes config, fix hardcoded toast, store MB relation URLs in ArtistNode metadata
+
+### Phase 9: Graph Rendering & Controls
+**Goal**: The graph canvas renders with improved visual clarity (larger labels, thinner genre outlines) and users have spatial arrow navigation plus particle animation controls
+**Depends on**: Phase 8
+**Requirements**: BUDG-01, NAV-01, VIS-01, VIS-02, ANIM-01, ANIM-02
+**Success Criteria** (what must be TRUE):
+  1. The node limit slider range spans 64 to 512 (replacing the previous 10-200 range)
+  2. Pressing arrow keys navigates to the nearest visible node in that direction regardless of whether a node is selected or the detail panel is open (spatial mode always, no topology-only mode)
+  3. Artist name labels on nodes are visibly larger than before with text remaining legible and properly scaled at all zoom levels
+  4. Genre outline rings around nodes are thin and subtle (reduced lineWidth and no/minimal shadow glow) compared to the previous thick neon rings
+  5. Particle animation is off when the graph first loads; a toggle in the control panel turns particles on or off at any time
+**Plans**: TBD
+
+Plans:
+- [ ] 09-01: Slider range update, spatial arrow nav override, label size increase, genre ring thinning
+- [ ] 09-02: Particle toggle (off by default) in ControlPanel and GraphCanvas
+
+### Phase 10: Panel Overhaul
+**Goal**: Both side panels have manual collapse/expand controls with useful minimized states, and the detail panel surfaces all external links from engine metadata
+**Depends on**: Phase 8
+**Requirements**: LINK-02, PANL-01, PANL-02, PANL-03, PANL-04
+**Success Criteria** (what must be TRUE):
+  1. The left control panel collapses only when the user clicks the (x) button, not on a timer or mouse-leave event; it stays collapsed until manually reopened
+  2. When the left panel is collapsed, a minimized view (icon or tab) remains visible so the user can reopen it
+  3. The right detail panel has a minimized view with an icon to reopen it; when minimized with no artist selected, it shows node count and a scrollable artist list
+  4. When an artist is selected and the right panel is open, all available external links (Spotify, Deezer, YouTube, ListenBrainz, MusicBrainz, etc.) from the engine metadata are displayed as clickable icons or links
+**Plans**: TBD
+
+Plans:
+- [ ] 10-01: Left panel manual toggle with minimized tab, remove auto-collapse timer
+- [ ] 10-02: Right panel minimized view, summary content, external links rendering from metadata
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Engine Foundation | 2/2 | Complete   | 2026-03-16 |
-| 2. Multi-Provider Data Pipeline | 2/2 | Complete   | 2026-03-16 |
-| 3. Interactive Viewer | 5/5 | Complete   | 2026-03-16 |
-| 4. Controls, Export, and Polish | 3/3 | Complete   | 2026-03-17 |
-| 5. Fix Integration Wiring | 2/2 | Complete   | 2026-03-17 |
-| 6. Genre Coloring Pipeline | 2/2 | Complete   | 2026-03-17 |
-| 7. Visual Polish & Animations | 4/4 | Complete   | 2026-03-18 |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Engine Foundation | v1.0 | 2/2 | Complete | 2026-03-16 |
+| 2. Multi-Provider Data Pipeline | v1.0 | 2/2 | Complete | 2026-03-16 |
+| 3. Interactive Viewer | v1.0 | 5/5 | Complete | 2026-03-16 |
+| 4. Controls, Export, and Polish | v1.0 | 3/3 | Complete | 2026-03-17 |
+| 5. Fix Integration Wiring | v1.0 | 2/2 | Complete | 2026-03-17 |
+| 6. Genre Coloring Pipeline | v1.0 | 2/2 | Complete | 2026-03-17 |
+| 7. Visual Polish & Animations | v1.0 | 4/4 | Complete | 2026-03-18 |
+| 8. Engine Data Wiring | v1.1 | 0/1 | Not started | - |
+| 9. Graph Rendering & Controls | v1.1 | 0/2 | Not started | - |
+| 10. Panel Overhaul | v1.1 | 0/2 | Not started | - |
