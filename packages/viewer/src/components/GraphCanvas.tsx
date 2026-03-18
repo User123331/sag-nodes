@@ -11,7 +11,7 @@ import type { ForceNode, ForceLink } from '../types/graph.js';
 import { genreColor, NO_GENRE_COLOR } from '../utils/genreCluster.js';
 import { nodeRadius } from '../utils/nodeSize.js';
 import { filterByDepth, filterByProviders, filterByNodeLimit } from '../utils/providerFilter.js';
-import { findNearestInDirection } from '../utils/keyboardNav.js';
+import { findNearestInDirection, getConnectedNeighbors } from '../utils/keyboardNav.js';
 import { clamp, lerp, fract, BLOOM_DURATION_MS, EDGE_GROW_DURATION_MS, RIPPLE_DURATION_MS, RIPPLE_MAX_RADIUS, PARTICLE_RADIUS, PARTICLE_SKIP_SCALE } from '../utils/animationMath.js';
 import type { ProviderId } from '@similar-artists-graph/engine';
 import './GraphCanvas.css';
@@ -93,6 +93,7 @@ export function GraphCanvas() {
   const linksRef = useRef(links);
   const focusedNodeMbidRef = useRef(focusedNodeMbid);
   const isShortcutOverlayOpenRef = useRef(isShortcutOverlayOpen);
+  const neighborCycleIndexRef = useRef<number>(0);
   const enabledProvidersRef = useRef(enabledProviders);
   const cooldownTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
@@ -105,6 +106,9 @@ export function GraphCanvas() {
 
   useEffect(() => { seedMbidRef.current = seedMbid; }, [seedMbid]);
   useEffect(() => { selectedNodeRef.current = selectedNode; }, [selectedNode]);
+  useEffect(() => {
+    neighborCycleIndexRef.current = 0;
+  }, [selectedNode]);
   useEffect(() => {
     if (selectedNode === null) {
       neighborMbidsRef.current = new Set();
@@ -350,22 +354,41 @@ export function GraphCanvas() {
 
       } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         e.preventDefault();
-        const currentMbid = focusedNodeMbidRef.current;
-        const focusedNode = currentMbid !== null ? currentNodes.find(n => n.mbid === currentMbid) ?? null : null;
-        if (!focusedNode) {
-          // Focus the first node
-          if (currentNodes.length > 0) {
-            const first = currentNodes[0];
-            if (first) setFocusedNode(first.mbid);
+        const selected = selectedNodeRef.current;
+
+        if (selected !== null) {
+          // Topology mode: cycle through connected neighbors when a node is selected
+          const neighbors = getConnectedNeighbors(selected.mbid, linksRef.current, currentNodes);
+          if (neighbors.length === 0) return;
+
+          const isForward = e.key === 'ArrowRight' || e.key === 'ArrowDown';
+          const delta = isForward ? 1 : -1;
+          const nextIdx = ((neighborCycleIndexRef.current + delta) + neighbors.length) % neighbors.length;
+          neighborCycleIndexRef.current = nextIdx;
+          const neighborNode = neighbors[nextIdx];
+          if (neighborNode) {
+            selectNode(neighborNode);
+            setFocusedNode(neighborNode.mbid);
           }
-          return;
+        } else {
+          // Spatial mode: find nearest node in direction when nothing is selected
+          const currentMbid = focusedNodeMbidRef.current;
+          const focusedNode = currentMbid !== null ? currentNodes.find(n => n.mbid === currentMbid) ?? null : null;
+          if (!focusedNode) {
+            // Focus the first node
+            if (currentNodes.length > 0) {
+              const first = currentNodes[0];
+              if (first) setFocusedNode(first.mbid);
+            }
+            return;
+          }
+          const nearest = findNearestInDirection(
+            focusedNode,
+            currentNodes,
+            e.key as 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight'
+          );
+          if (nearest) setFocusedNode(nearest.mbid);
         }
-        const nearest = findNearestInDirection(
-          focusedNode,
-          currentNodes,
-          e.key as 'ArrowUp' | 'ArrowDown' | 'ArrowLeft' | 'ArrowRight'
-        );
-        if (nearest) setFocusedNode(nearest.mbid);
 
       } else if (e.key === 'Enter') {
         const currentMbid = focusedNodeMbidRef.current;
