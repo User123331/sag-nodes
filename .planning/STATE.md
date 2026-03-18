@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-03-PLAN.md all 3 tasks including post-checkpoint ring removal fix
-last_updated: "2026-03-17T23:56:38.518Z"
+stopped_at: Completed 07-04-PLAN.md tasks 1-2, checkpoint pending human verify
+last_updated: "2026-03-18T00:02:13.164Z"
 last_activity: 2026-03-16 -- Plan 03-02 complete (SearchBar + GraphCanvas + App layout)
 progress:
   total_phases: 7
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 20
-  completed_plans: 19
+  completed_plans: 20
   percent: 85
 ---
 
@@ -72,6 +72,7 @@ Progress: [████████░░] 85%
 | Phase 07-visual-polish-and-animations P07-02 | 3 | 2 tasks | 2 files |
 | Phase 07-visual-polish-and-animations P07-02 | 20 | 3 tasks | 3 files |
 | Phase 07-visual-polish-and-animations P07-03 | 6 | 3 tasks | 2 files |
+| Phase 07-visual-polish-and-animations P07-04 | 4 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,7 @@ Recent decisions affecting current work:
 - [Phase 07-visual-polish-and-animations]: PARTICLE_RADIUS reduced from 1.5 to 0.75 after user visual review — smaller dots are subtler and less distracting on edges
 - [Phase 07-visual-polish-and-animations]: d3AlphaDecay restored to 0.0228 and setInterval reheat removed — simulation now cools naturally; autoPauseRedraw=false keeps canvas loop alive for particles
 - [Phase 07-visual-polish-and-animations]: Neighbor rings dropped after UAT — white stroke ring occluded artist labels; opacity contrast (0.7 neighbors / 0.3 unrelated) is sufficient visual indicator
+- [Phase 07-visual-polish-and-animations]: Topology mode activates when selectedNode is non-null: arrow keys cycle through getConnectedNeighbors() sorted by fusedScore; spatial mode (findNearestInDirection) retained as fallback
 
 ### Pending Todos
 
@@ -141,6 +143,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T23:56:38.516Z
-Stopped at: Completed 07-03-PLAN.md all 3 tasks including post-checkpoint ring removal fix
+Last session: 2026-03-18T00:02:13.161Z
+Stopped at: Completed 07-04-PLAN.md tasks 1-2, checkpoint pending human verify
 Resume file: None
