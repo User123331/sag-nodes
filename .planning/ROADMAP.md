@@ -168,10 +168,10 @@ Plans:
   1. Changing the node limit slider value and triggering a new exploration results in the engine returning at most that many nodes (not the hardcoded 150 default)
   2. Toast notifications about node limits display the actual configured limit value, not a hardcoded "150"
   3. After exploring an artist, ArtistNode metadata contains external URLs (Spotify, Deezer, YouTube, ListenBrainz, etc.) extracted from MusicBrainz relation data
-**Plans**: TBD
+**Plans**: 1 plans
 
 Plans:
-- [ ] 08-01: Wire slider value to engine maxNodes config, fix hardcoded toast, store MB relation URLs in ArtistNode metadata
+- [ ] 08-01-PLAN.md -- Engine externalUrls type+enrichment, viewer nodeLimit wiring, toast fixes, ForceNode externalUrls passthrough
 
 ### Phase 9: Graph Rendering & Controls
 **Goal**: The graph canvas renders with improved visual clarity (larger labels, thinner genre outlines) and users have spatial arrow navigation plus particle animation controls
