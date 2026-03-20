@@ -20,6 +20,8 @@ export function SearchBar() {
   const isSearching = useGraphStore(s => s.isSearching);
   const selectedArtist = useGraphStore(s => s.selectedArtist);
   const engine = useGraphStore(s => s.engine);
+  const initEngine = useGraphStore(s => s.initEngine);
+  const nodeLimit = useGraphStore(s => s.nodeLimit);
   const isExploring = useGraphStore(s => s.isExploring);
   const seedMbid = useGraphStore(s => s.seedMbid);
 
@@ -80,7 +82,10 @@ export function SearchBar() {
 
     setIsExploring(true);
     try {
-      const result = await engine.explore(artist.name);
+      initEngine({ maxNodes: nodeLimit });
+      const currentEngine = useGraphStore.getState().engine;
+      if (!currentEngine) return;
+      const result = await currentEngine.explore(artist.name);
       if (result.ok) {
         setGraph(result.value);
         if (result.value.warnings.length > 0) {
@@ -96,7 +101,7 @@ export function SearchBar() {
     } finally {
       setIsExploring(false);
     }
-  }, [engine, setSelectedArtist, setIsExploring, setGraph]);
+  }, [engine, initEngine, nodeLimit, setSelectedArtist, setIsExploring, setGraph]);
 
   const handleReset = useCallback(() => {
     clearSearch();

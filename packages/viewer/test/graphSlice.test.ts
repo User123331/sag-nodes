@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { create } from 'zustand';
 import { createGraphSlice, type GraphSlice } from '../src/store/graphSlice.js';
 import type { ExploreResult } from '@similar-artists-graph/engine';
+import { toForceNode } from '../src/types/graph.js';
 
 function makeMockResult(overrides: Partial<ExploreResult> = {}): ExploreResult {
   return {
@@ -201,6 +202,32 @@ describe('graphSlice', () => {
     // Existing nodes should not have addedAt set
     const existingNode = store.getState().nodes.find(n => n.mbid === 'node-001');
     expect(existingNode?.addedAt).toBeUndefined();
+  });
+
+  it('toForceNode carries externalUrls when present on the input ArtistNode', () => {
+    const artistNode = {
+      mbid: 'mbid-ext-001',
+      name: 'Radiohead',
+      sources: ['musicbrainz' as const],
+      externalUrls: [
+        { type: 'wikidata', url: 'https://www.wikidata.org/wiki/Q164813' },
+        { type: 'official homepage', url: 'https://radiohead.com' },
+      ],
+    };
+    const forceNode = toForceNode(artistNode);
+    expect(forceNode.externalUrls).toBeDefined();
+    expect(forceNode.externalUrls).toHaveLength(2);
+    expect(forceNode.externalUrls![0]).toEqual({ type: 'wikidata', url: 'https://www.wikidata.org/wiki/Q164813' });
+  });
+
+  it('toForceNode omits externalUrls when not present on the input ArtistNode', () => {
+    const artistNode = {
+      mbid: 'mbid-no-ext',
+      name: 'Portishead',
+      sources: ['lastfm' as const],
+    };
+    const forceNode = toForceNode(artistNode);
+    expect('externalUrls' in forceNode).toBe(false);
   });
 
   it('clearGraph resets all fields to initial state', () => {

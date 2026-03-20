@@ -21,6 +21,7 @@ export function DetailPanel() {
     engine,
     isExpanding,
     expandingMbid,
+    nodeLimit,
   } = useGraphStore(
     useShallow(s => ({
       selectedNode: s.selectedNode,
@@ -31,10 +32,12 @@ export function DetailPanel() {
       engine: s.engine,
       isExpanding: s.isExpanding,
       expandingMbid: s.expandingMbid,
+      nodeLimit: s.nodeLimit,
     }))
   );
 
   const selectNode = useGraphStore(s => s.selectNode);
+  const initEngine = useGraphStore(s => s.initEngine);
   const setExpandingMbid = useGraphStore(s => s.setExpandingMbid);
   const setIsExpanding = useGraphStore(s => s.setIsExpanding);
   const addExpansion = useGraphStore(s => s.addExpansion);
@@ -48,14 +51,16 @@ export function DetailPanel() {
     setIsExpanding(true);
 
     try {
-      const result = await engine.expand(node.mbid);
+      initEngine({ maxNodes: nodeLimit });
+      const currentEngine = useGraphStore.getState().engine;
+      if (!currentEngine) return;
+      const result = await currentEngine.expand(node.mbid);
       if (result.ok) {
         addExpansion(result.value, node);
         triggerReheat();
 
         if (result.value.truncated) {
-          const nodeCount = result.value.nodes.length;
-          toast(`Node limit reached (${nodeCount}/150). Graph is at maximum size.`, { duration: 5000 });
+          toast(`Node limit reached (${result.value.nodes.length}/${nodeLimit}). Graph is at maximum size.`, { duration: 5000 });
         }
         if (result.value.warnings.length > 0) {
           result.value.warnings.forEach((w: { provider: string; error: string }) => {
@@ -71,7 +76,7 @@ export function DetailPanel() {
       setExpandingMbid(null);
       setIsExpanding(false);
     }
-  }, [engine, selectedNode, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat]);
+  }, [engine, initEngine, nodeLimit, selectedNode, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat]);
 
   if (!selectedNode) {
     return <div className={`detail-panel${isPanelOpen ? ' detail-panel--open' : ''}`} />;

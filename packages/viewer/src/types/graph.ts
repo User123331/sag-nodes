@@ -13,6 +13,7 @@ export interface ForceNode {
     spotifyId?: string;
     deezerId?: string;
   };
+  externalUrls?: ReadonlyArray<{ type: string; url: string }>;
   addedAt?: number;  // timestamp ms — set on new nodes in addExpansion for bloom animation
   // d3 simulation fields — mutable, added by force layout
   x?: number;
@@ -48,6 +49,7 @@ export function toForceNode(node: ArtistNode): ForceNode {
         ...(node.metadata.deezerId !== undefined ? { deezerId: node.metadata.deezerId } : {}),
       }
     } : {}),
+    ...(node.externalUrls !== undefined ? { externalUrls: node.externalUrls } : {}),
   };
 }
 

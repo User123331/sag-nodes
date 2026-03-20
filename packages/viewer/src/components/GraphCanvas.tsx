@@ -73,6 +73,7 @@ export function GraphCanvas() {
   );
 
   // Actions
+  const initEngine = useGraphStore(s => s.initEngine);
   const selectNode = useGraphStore(s => s.selectNode);
   const setExpandingMbid = useGraphStore(s => s.setExpandingMbid);
   const addExpansion = useGraphStore(s => s.addExpansion);
@@ -85,6 +86,7 @@ export function GraphCanvas() {
   const setProviderCooldown = useGraphStore(s => s.setProviderCooldown);
 
   // Refs to avoid stale closures in canvas callbacks
+  const nodeLimitRef = useRef(nodeLimit);
   const seedMbidRef = useRef(seedMbid);
   const selectedNodeRef = useRef(selectedNode);
   const expandingMbidRef = useRef(expandingMbid);
@@ -104,6 +106,7 @@ export function GraphCanvas() {
   const rippleNodeMbidRef = useRef<string | null>(null);
   const rippleStartTimeRef = useRef<number | null>(null);
 
+  useEffect(() => { nodeLimitRef.current = nodeLimit; }, [nodeLimit]);
   useEffect(() => { seedMbidRef.current = seedMbid; }, [seedMbid]);
   useEffect(() => { selectedNodeRef.current = selectedNode; }, [selectedNode]);
   useEffect(() => {
@@ -254,13 +257,16 @@ export function GraphCanvas() {
     });
 
     try {
-      const result = await engine.expand(node.mbid);
+      initEngine({ maxNodes: nodeLimitRef.current });
+      const currentEngine = useGraphStore.getState().engine;
+      if (!currentEngine) return;
+      const result = await currentEngine.expand(node.mbid);
       if (result.ok) {
         addExpansion(result.value, node);
         triggerReheat();
 
         if (result.value.truncated) {
-          toast(`Node limit reached (${nodesRef.current.length}/150). Graph is at maximum size.`, { duration: 5000 });
+          toast(`Node limit reached (${nodesRef.current.length}/${nodeLimitRef.current}). Graph is at maximum size.`, { duration: 5000 });
         }
         if (result.value.warnings.length > 0) {
           const DEFAULT_COOLDOWN_MS = 30_000;
@@ -298,7 +304,7 @@ export function GraphCanvas() {
         setProviderFetching(id, false);
       });
     }
-  }, [engine, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat, setProviderStatus, setProviderFetching, setProviderCooldown]);
+  }, [engine, initEngine, setExpandingMbid, setIsExpanding, addExpansion, triggerReheat, setProviderStatus, setProviderFetching, setProviderCooldown]);
 
   const handleNodeClick = useCallback((node: ForceNode) => {
     if (lastClickedRef.current === node.mbid && clickTimerRef.current !== null) {
