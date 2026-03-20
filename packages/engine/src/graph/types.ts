@@ -17,6 +17,7 @@ export interface NodeAttrs {
     spotifyId?: string;
     deezerId?: string;
   };
+  externalUrls?: ReadonlyArray<{ type: string; url: string }>;
 }
 
 export interface EdgeAttrs {
@@ -36,6 +37,7 @@ export interface ArtistNode {
     readonly spotifyId?: string;
     readonly deezerId?: string;
   };
+  readonly externalUrls?: ReadonlyArray<{ type: string; url: string }>;
 }
 
 export interface SimilarityEdge {

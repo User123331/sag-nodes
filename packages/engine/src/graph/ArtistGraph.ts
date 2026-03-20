@@ -100,6 +100,7 @@ export class ArtistGraph {
         sources: [...attrs.sources],
         ...(attrs.tags !== undefined ? { tags: attrs.tags } : {}),
         ...(attrs.metadata !== undefined ? { metadata: attrs.metadata } : {}),
+        ...(attrs.externalUrls !== undefined ? { externalUrls: attrs.externalUrls } : {}),
       });
     });
 

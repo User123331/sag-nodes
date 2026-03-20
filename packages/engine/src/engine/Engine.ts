@@ -299,12 +299,22 @@ export class EngineImpl implements EngineInterface {
     const mbids = this.graphBuilder.getNodeMbids();
     for (const mbid of mbids) {
       const attrs = this.graphBuilder.artistGraph.graph.getNodeAttributes(mbid);
-      // Skip nodes that already have tags (populated by resolver or previous enrichment)
-      if (attrs.tags !== undefined && attrs.tags.length > 0) continue;
+      // Skip nodes that already have both tags and externalUrls (fully enriched)
+      const hasTags = attrs.tags !== undefined && attrs.tags.length > 0;
+      const hasExternalUrls = attrs.externalUrls !== undefined && attrs.externalUrls.length > 0;
+      if (hasTags && hasExternalUrls) continue;
 
       const result = await this.resolver.mbProvider.getArtistDetails(mbid);
-      if (result.ok && result.value.tags !== undefined && result.value.tags.length > 0) {
-        this.graphBuilder.artistGraph.graph.setNodeAttribute(mbid, 'tags', result.value.tags);
+      if (result.ok) {
+        if (result.value.tags !== undefined && result.value.tags.length > 0) {
+          this.graphBuilder.artistGraph.graph.setNodeAttribute(mbid, 'tags', result.value.tags);
+        }
+        if (result.value.externalUrls !== undefined && result.value.externalUrls.length > 0) {
+          const currentUrls = this.graphBuilder.artistGraph.graph.getNodeAttributes(mbid).externalUrls;
+          if (currentUrls === undefined || currentUrls.length === 0) {
+            this.graphBuilder.artistGraph.graph.setNodeAttribute(mbid, 'externalUrls', result.value.externalUrls);
+          }
+        }
       }
     }
   }
